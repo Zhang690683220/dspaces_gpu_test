@@ -18,6 +18,7 @@ constexpr int DEFAULT_DIM = 1024;
 constexpr double DEFAULT_VALUE = 1.l;
 constexpr int DEFAULT_TIMESTEP = 10;
 
+
 void print_usage()
 {
     std::cerr<<"Usage: cpu_put --dims <dims> --np <np[0] .. np[dims-1]> --sp <sp[0] ... sp[dims-1]> "
@@ -30,7 +31,7 @@ void print_usage()
              <<"--ts                        - the number of timestep iterations written"<<std::endl
              <<"-l, --listen_addr (optional)- listen address of the mercury network. Default to be "
                "the same as server's address"<<std::endl
-             <<"-s, --elem_size (optional)  - the number of bytes in each element. Defaults to 8"<<std::endl
+             <<"-t, --type (optional)       - type of each element [float|double]. Defaults to double"<<std::endl
              <<"-c, --var_count (optional)  - the number of variables written in each iteration. "
                "Defaults to 1"<<std::endl
              <<"--log (optional)            - output log file name. Default to cpu_put.log"<<std::endl
@@ -54,7 +55,7 @@ int main(int argc, char* argv[]) {
     std::vector<uint64_t> sp;
     int timestep;
     std::string listen_addr;
-    size_t elem_size = 8;
+    std::string elem_type = "double";
     int num_vars = 1;
     std::string log_name = "cpu_put.log";
     int delay = 0;
@@ -66,8 +67,8 @@ int main(int argc, char* argv[]) {
     app.add_option("--sp", sp, "the per-process data size in the ith dimension")->expected(1, 8);
     app.add_option("--ts", timestep, "the number of timestep iterations")->required();
     app.add_option("-l, --listen_addr", listen_addr, "listen address of the mercury network");
-    app.add_option("-s, --elem_size", elem_size, "the number of bytes in each element. Defaults to 8",
-                    true);
+    app.add_option("-t, --type", elem_type, "type of each element [float|double]. Defaults to double",
+                    true)->check(CLI::IsMember({"double", "float"}));
     app.add_option("-c, --var_count", num_vars, "the number of variables written in each iteration."
                     "Defaults to 1", true);
     app.add_option("--log", log_name, "output log file name. Default to cpu_put.log", true);
@@ -103,8 +104,15 @@ int main(int argc, char* argv[]) {
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
-                     log_name, terminate);
+    if(elem_type.compare("double") == 0){
+        Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
+                        log_name, terminate);
+    } else if(elem_type.compare("float") == 0) {
+        Run<float>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
+                        log_name, terminate);
+    }
+
+    
     /*
     char* listen_addr_str = NULL;
     if(argc == 2) {
