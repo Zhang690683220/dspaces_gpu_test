@@ -1,5 +1,5 @@
 add_executable(cpu_put cpu_put.cpp)
-target_include_directories(cpu_get PRIVATE ${INCLUDE_PATH})
+target_include_directories(cpu_put PRIVATE ${INCLUDE_PATH})
 target_link_libraries(cpu_put PUBLIC MPI::MPI_CXX)
 target_compile_options(cpu_put PUBLIC ${OpenACC_CXX_OPTIONS})
 target_link_libraries(cpu_put PUBLIC ${OpenACC_CXX_OPTIONS})
