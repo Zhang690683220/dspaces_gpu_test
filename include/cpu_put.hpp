@@ -1,6 +1,7 @@
 #ifndef CPU_PUT_HPP
 #define CPU_PUT_HPP
 
+#include <cstring>
 #include "unistd.h"
 #include "mpi.h"
 #include "dspaces.h"
@@ -23,7 +24,12 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     MPI_Comm_rank(gcomm, &rank);
 
     dspaces_client_t ndcl = dspaces_CLIENT_NULL;
-    const char* listen_addr_str = listen_addr.empty()? NULL : listen_addr.c_str();
+    char listen_addr_str[128];
+    if(listen_addr.empty()) {
+        listen_addr_str = NULL;
+    } else {
+        strcpy(listen_addr_str, listen_addr.c_str());
+    }
     dspaces_init(rank, &ndcl, listen_addr_str);
 
     uint64_t grid_size = 1;
@@ -117,7 +123,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     dspaces_fini(ndcl);
 
-    return 0
+    return 0;
 
 }
 };

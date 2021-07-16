@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
         fprintf(stderr,
                 "Product of np[i] args must equal number of MPI processes!\n");
         print_usage();
-        MPI_Abort(MPI_COMM_WORLD, 1)
+        MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
     Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
