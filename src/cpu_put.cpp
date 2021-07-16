@@ -28,6 +28,8 @@ void print_usage()
                "The product of np[0],...,np[dim-1] must be the number of MPI ranks"<<std::endl
              <<"--sp                        - the per-process data size in the ith dimension"<<std::endl
              <<"--ts                        - the number of timestep iterations written"<<std::endl
+             <<"-l, --listen_addr (optional)- listen address of the mercury network. Default to be "
+               "the same as server's address"<<std::endl
              <<"-s, --elem_size (optional)  - the number of bytes in each element. Defaults to 8"<<std::endl
              <<"-c, --var_count (optional)  - the number of variables written in each iteration. "
                "Defaults to 1"<<std::endl
@@ -63,6 +65,7 @@ int main(int argc, char* argv[]) {
                     "...,np[dim-1] must be the number of MPI ranks")->expected(1, 8);
     app.add_option("--sp", sp, "the per-process data size in the ith dimension")->expected(1, 8);
     app.add_option("--ts", timestep, "the number of timestep iterations")->required();
+    app.add_option("-l, --listen_addr", listen_addr, "listen address of the mercury network");
     app.add_option("-s, --elem_size", elem_size, "the number of bytes in each element. Defaults to 8",
                     true);
     app.add_option("-c, --var_count", num_vars, "the number of variables written in each iteration."
