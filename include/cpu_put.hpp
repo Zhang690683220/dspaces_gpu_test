@@ -44,7 +44,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             data_tab[i][j] = (double) j+0.01*i;
         }
         var_name_tab[i] = (char*) malloc(sizeof(char) * 128);
-        var_name_tab[i] = sprintf("test_var_%d", i);
+        sprintf(var_name_tab[i], "test_var_%d", i);
     }
 
     uint64_t* off = (uint64_t*) malloc(dims*sizeof(uint64_t));
