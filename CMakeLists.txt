@@ -13,6 +13,8 @@ find_package(MPI REQUIRED)
 find_package(OpenACC REQUIRED)
 find_package(DataSpaces REQUIRED)
 
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 add_subdirectory(src)
 
 #add_executable(gpu_put gpu_put.cpp)
