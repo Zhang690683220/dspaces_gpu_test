@@ -43,7 +43,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         for(int j=0; j<grid_size; j++) {
             data_tab[i][j] = (double) j+0.01*i;
         }
-        var_name[i] = "test_var_" + std::to_string(i);
+        var_name[i] = "test_var_";
+        var_name[i] += std::to_string(i);
     }
 
     uint64_t* off = (uint64_t*) malloc(dims*sizeof(uint64_t));
