@@ -63,7 +63,6 @@ int main(int argc, char* argv[]) {
                     "...,np[dim-1] must be the number of MPI ranks")->expected(1, 8);
     app.add_option("--sp", sp, "the per-process data size in the ith dimension")->expected(1, 8);
     app.add_option("--ts", timestep, "the number of timestep iterations")->required();
-    app.add_option()
     app.add_option("-s, --elem_size", elem_size, "the number of bytes in each element. Defaults to 8",
                     true);
     app.add_option("-c, --var_count", num_vars, "the number of variables written in each iteration."
@@ -71,7 +70,7 @@ int main(int argc, char* argv[]) {
     app.add_option("--log", log_name, "output log file name. Default to cpu_put.log", true);
     app.add_option("--delay", delay, "sleep(delay) seconds in each timestep. Default to 0", true);
     app.add_option("--interval", interval, "Output timestep interval. Default to 1", true);
-    app.add_flag("-t", terminate, "send server termination after writing is complete", true);
+    app.add_flag("-t", terminate, "send server termination after writing is complete");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -168,7 +167,7 @@ int main(int argc, char* argv[]) {
 
     //std::cout<< "DSPACES_CPU_PUT() TIME = " << put_time << "(ms)" << std::endl;
     */
-   
+
     MPI_Finalize();
 
     return 0;

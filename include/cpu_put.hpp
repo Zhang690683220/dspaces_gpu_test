@@ -23,7 +23,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     MPI_Comm_rank(gcomm, &rank);
 
     dspaces_client_t ndcl = dspaces_CLIENT_NULL;
-    char* listen_addr_str = listen_addr.empty()? NULL : listen_addr.c_str();
+    const char* listen_addr_str = listen_addr.empty()? NULL : listen_addr.c_str();
     dspaces_init(rank, &ndcl, listen_addr_str);
 
     uint64_t grid_size = 1;
@@ -56,11 +56,11 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     }
 
     std::ofstream log;
-    double* avg_write = nullptr;
+    double* avg_put = nullptr;
     double total_avg = 0;
 
     if(rank == 0) {
-        avg_write = (double*) malloc(sizeof(double)*timesteps);
+        avg_put = (double*) malloc(sizeof(double)*timesteps);
         log.open(log_name, std::ofstream::out | std::ofstream::trunc);
         log << "step, put_ms" << std::endl;
     }
@@ -71,27 +71,27 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
         Timer timer_put;
         timer_put.start();
-        for(int i; i<var_num; i++) {
-            dspaces_put(ndcl, var_name[i], ts, sizeof(double), dims, lb, ub, data_tab[i]);
+        for(int i=0; i<var_num; i++) {
+            dspaces_put(ndcl, var_name[i].c_str(), ts, sizeof(double), dims, lb, ub, data_tab[i]);
         }
         double time_put = timer_put.stop();
 
-        double *avg_time_write = nullptr;
+        double *avg_time_put = nullptr;
 
         if(rank == 0) {
-            avg_time_write = (double*) malloc(sizeof(double)*nprocs);
+            avg_time_put = (double*) malloc(sizeof(double)*nprocs);
         }
 
-        MPI_Gather(&time_write, 1, MPI_DOUBLE, avg_time_write, 1, MPI_DOUBLE, 0, gcomm);
+        MPI_Gather(&time_put, 1, MPI_DOUBLE, avg_time_put, 1, MPI_DOUBLE, 0, gcomm);
 
         if(rank == 0) {
             for(int i=0; i<nprocs; i++) {
-                avg_write[ts-1] += avg_time_write[i];
+                avg_put[ts-1] += avg_time_put[i];
             }
-            avg_write[ts-1] /= nprocs;
-            log << ts << ", " << avg_write[ts-1] << std::endl;
-            total_avg += avg_write[ts-1];
-            free(avg_time_write);
+            avg_put[ts-1] /= nprocs;
+            log << ts << ", " << avg_put[ts-1] << std::endl;
+            total_avg += avg_put[ts-1];
+            free(avg_time_put);
         }
     }
 
@@ -103,7 +103,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(off);
     free(lb);
     free(ub);
-    free(avg_write);
+    free(avg_put);
 
     if(rank == 0) {
         total_avg /= timesteps;
@@ -124,3 +124,4 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
 
 #endif // CPU_PUT_HPP
+
