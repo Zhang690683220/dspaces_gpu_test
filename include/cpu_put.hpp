@@ -104,6 +104,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         free(data_tab[i]);
     }
     free(data_tab);
+    free(var_name_tab);
 
     free(off);
     free(lb);
