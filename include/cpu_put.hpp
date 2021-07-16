@@ -24,10 +24,9 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     MPI_Comm_rank(gcomm, &rank);
 
     dspaces_client_t ndcl = dspaces_CLIENT_NULL;
-    char listen_addr_str[128];
-    if(listen_addr.empty()) {
-        listen_addr_str = NULL;
-    } else {
+    char* listen_addr_str = NULL;
+    if(!listen_addr.empty()) {
+        listen_addr_str = (char*) malloc(sizeof(char)*128);
         strcpy(listen_addr_str, listen_addr.c_str());
     }
     dspaces_init(rank, &ndcl, listen_addr_str);
@@ -110,6 +109,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(lb);
     free(ub);
     free(avg_put);
+    free(listen_addr_str);
 
     if(rank == 0) {
         total_avg /= timesteps;
