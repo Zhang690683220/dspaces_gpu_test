@@ -13,6 +13,8 @@ find_package(MPI REQUIRED)
 find_package(OpenACC REQUIRED)
 find_package(DataSpaces REQUIRED)
 
+add_subdirectory(src)
+
 #add_executable(gpu_put gpu_put.cpp)
 #target_link_libraries(gpu_put PUBLIC MPI::MPI_CXX)
 #target_compile_options(gpu_put PUBLIC ${OpenACC_CXX_OPTIONS})
