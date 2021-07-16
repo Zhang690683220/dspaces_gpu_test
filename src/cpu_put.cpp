@@ -8,11 +8,34 @@
 #include <unistd.h>
 
 #include "dspaces.h"
+#include "CLI11.hpp"
 #include "timer.hpp"
+
+#include "cpu_put.hpp"
+
 
 constexpr int DEFAULT_DIM = 1024;
 constexpr double DEFAULT_VALUE = 1.l;
 constexpr int DEFAULT_TIMESTEP = 10;
+
+void print_usage()
+{
+    std::cerr<<"Usage: cpu_put --dims <dims> --np <np[0] .. np[dims-1]> --sp <sp[0] ... sp[dims-1]> "
+               "--ts <timesteps> [-s <elem_size>] [-c <var_count>] [--log <log_file>] [--delay <delay_second>] "
+               "[--interval <output_freq>] [-t]"<<std::endl
+             <<"--dims                      - number of data dimensions. Must be [1-8]"<<std::endl
+             <<"--np                        - the number of processes in the ith dimension. "
+               "The product of np[0],...,np[dim-1] must be the number of MPI ranks"<<std::endl
+             <<"--sp                        - the per-process data size in the ith dimension"<<std::endl
+             <<"--ts                        - the number of timestep iterations written"<<std::endl
+             <<"-s, --elem_size (optional)  - the number of bytes in each element. Defaults to 8"<<std::endl
+             <<"-c, --var_count (optional)  - the number of variables written in each iteration. "
+               "Defaults to 1"<<std::endl
+             <<"--log (optional)            - output log file name. Default to cpu_put.log"<<std::endl
+             <<"--delay (optional)          - sleep(delay) seconds in each timestep. Default to 0"<<std::endl
+             <<"--interval (optional)       - Output timestep interval. Default to 1"<<std::endl
+             <<"-t (optional)               - send server termination after writing is complete"<<std::endl;
+}
 
 int timer_cb(dspaces_client_t client, struct dspaces_req* req, void* timer) {
     Timer* timer_ptr = (Timer*) timer;
@@ -22,6 +45,65 @@ int timer_cb(dspaces_client_t client, struct dspaces_req* req, void* timer) {
 }
 
 int main(int argc, char* argv[]) {
+
+    CLI::App app{"CPU PUT Emulator for DataSpaces"};
+    int dims;              // number of dimensions
+    std::vector<int> np;
+    std::vector<uint64_t> sp;
+    int timestep;
+    std::string listen_addr;
+    size_t elem_size = 8;
+    int num_vars = 1;
+    std::string log_name = "cpu_put.log";
+    int delay = 0;
+    int interval = 1;
+    bool terminate = false;
+    app.add_option("--dims", dims, "number of data dimensions. Must be [1-8]")->required();
+    app.add_option("--np", np, "the number of processes in the ith dimension. The product of np[0],"
+                    "...,np[dim-1] must be the number of MPI ranks")->expected(1, 8);
+    app.add_option("--sp", sp, "the per-process data size in the ith dimension")->expected(1, 8);
+    app.add_option("--ts", timestep, "the number of timestep iterations")->required();
+    app.add_option()
+    app.add_option("-s, --elem_size", elem_size, "the number of bytes in each element. Defaults to 8",
+                    true);
+    app.add_option("-c, --var_count", num_vars, "the number of variables written in each iteration."
+                    "Defaults to 1", true);
+    app.add_option("--log", log_name, "output log file name. Default to cpu_put.log", true);
+    app.add_option("--delay", delay, "sleep(delay) seconds in each timestep. Default to 0", true);
+    app.add_option("--interval", interval, "Output timestep interval. Default to 1", true);
+    app.add_flag("-t", terminate, "send server termination after writing is complete", true);
+
+    CLI11_PARSE(app, argc, argv);
+
+    int npapp = 1;             // number of application processes
+    for(int i = 0; i < dims; i++) {
+        npapp *= np[i];
+    }
+
+    int nprocs, rank;
+    MPI_Comm gcomm;
+    // Using SPMD style programming
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    gcomm = MPI_COMM_WORLD;
+
+    int color = 1;
+    MPI_Comm_split(MPI_COMM_WORLD, color, rank, &gcomm);
+
+    if(npapp != nprocs) {
+        std::cerr<<"Product of np[i] args must equal number of MPI processes!"<<std::endl;
+        fprintf(stderr,
+                "Product of np[i] args must equal number of MPI processes!\n");
+        print_usage();
+        MPI_Abort(MPI_COMM_WORLD, 1)
+    }
+
+    Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
+                     log_name, terminate);
+    /*
     char* listen_addr_str = NULL;
     if(argc == 2) {
         listen_addr_str = argv[1];
@@ -85,9 +167,11 @@ int main(int argc, char* argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
 
     //std::cout<< "DSPACES_CPU_PUT() TIME = " << put_time << "(ms)" << std::endl;
-
+    */
+   
     MPI_Finalize();
 
     return 0;
+    
 
 }
