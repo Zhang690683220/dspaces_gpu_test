@@ -37,7 +37,7 @@ void print_usage()
              <<"--log (optional)            - output log file name. Default to cpu_put.log"<<std::endl
              <<"--delay (optional)          - sleep(delay) seconds in each timestep. Default to 0"<<std::endl
              <<"--interval (optional)       - Output timestep interval. Default to 1"<<std::endl
-             <<"-t (optional)               - send server termination after writing is complete"<<std::endl;
+             <<"-k (optional)               - send server kill signal after writing is complete"<<std::endl;
 }
 
 int timer_cb(dspaces_client_t client, struct dspaces_req* req, void* timer) {
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
     app.add_option("--log", log_name, "output log file name. Default to cpu_put.log", true);
     app.add_option("--delay", delay, "sleep(delay) seconds in each timestep. Default to 0", true);
     app.add_option("--interval", interval, "Output timestep interval. Default to 1", true);
-    app.add_flag("-t", terminate, "send server termination after writing is complete");
+    app.add_flag("-k", terminate, "send server kill signal after writing is complete");
 
     CLI11_PARSE(app, argc, argv);
 
