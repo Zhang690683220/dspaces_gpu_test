@@ -14,11 +14,6 @@
 #include "cpu_put.hpp"
 
 
-constexpr int DEFAULT_DIM = 1024;
-constexpr double DEFAULT_VALUE = 1.l;
-constexpr int DEFAULT_TIMESTEP = 10;
-
-
 void print_usage()
 {
     std::cerr<<"Usage: cpu_put --dims <dims> --np <np[0] .. np[dims-1]> --sp <sp[0] ... sp[dims-1]> "
@@ -99,87 +94,32 @@ int main(int argc, char* argv[]) {
 
     if(npapp != nprocs) {
         std::cerr<<"Product of np[i] args must equal number of MPI processes!"<<std::endl;
-        fprintf(stderr,
-                "Product of np[i] args must equal number of MPI processes!\n");
         print_usage();
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    if(elem_type==1){
+    switch (elem_type)
+    {
+    case 1:
         Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
                         log_name, terminate);
-    } else if(elem_type == 2) {
+        break;
+
+    case 2:
         Run<float>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
                         log_name, terminate);
+        break;
+    
+    default:
+        std::cerr<<"Element type is not supported !!!"<<std::endl;
+        print_usage();
+        MPI_Abort(MPI_COMM_WORLD, 1);
+        break;
     }
 
     
-    /*
-    char* listen_addr_str = NULL;
-    if(argc == 2) {
-        listen_addr_str = argv[1];
-    }
-    int rank, nprocs;
-    MPI_Init(&argc, &argv);
-    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Barrier(MPI_COMM_WORLD);
 
-    Timer timer_sync;
-    Timer timer_async;
-    double put_time_async;
-
-    dspaces_client_t ndcl = dspaces_CLIENT_NULL;
-    dspaces_init(rank, &ndcl, listen_addr_str);
-
-    char var_name[128];
-    sprintf(var_name, "test_gpu_data");
-
-    double* cpu_data;
-    int dim0, dim1, dim2;
-    int ndims = 3;
-    dim0 = 64;
-    dim1 = DEFAULT_DIM;
-    dim2 = DEFAULT_DIM;
-    int size = dim0*dim1*dim2;
-
-    cpu_data = (double*) malloc(size*sizeof(double));
-
-    for(int ts=1; ts<=DEFAULT_TIMESTEP; ts++) {
-
-    for(int i=0; i<dim0; i++) {
-        for(int j=0; j<dim1; j++) {
-            for(int k=0; k<dim2; k++) {
-                cpu_data[i*dim1*dim2+j*dim2+k] = DEFAULT_VALUE;
-            }
-        }
-    }
-
-    uint64_t lb[3] = {0}, ub[3] = {0};
-
-    ub[0] = 63;
-    ub[1] = 1023;
-    ub[2] = 1023;
-
-    dspaces_sub(ndcl, var_name, ts, sizeof(double), ndims, lb, ub, timer_cb, &timer_sync);
-    sleep(3);
-
-    timer_sync.start();
-    timer_async.start();
-    dspaces_put(ndcl, var_name, ts, sizeof(double), ndims, lb, ub, cpu_data);
-    put_time_async = timer_async.stop();
-
-    std::cout<< "DSPACES_CPU_PUT() Version = "<< ts << " TIME(ASync) = " << put_time_async << "(ms)" << std::endl;
-
-    }
-
-    dspaces_fini(ndcl);
-
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    //std::cout<< "DSPACES_CPU_PUT() TIME = " << put_time << "(ms)" << std::endl;
-    */
-
+    
     MPI_Finalize();
 
     return 0;
