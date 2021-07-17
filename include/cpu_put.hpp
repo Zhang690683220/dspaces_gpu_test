@@ -51,9 +51,6 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
     for(int i=0; i<var_num; i++) {
         data_tab[i] = (double*) malloc(sizeof(double) * grid_size);
-        for(int j=0; j<grid_size; j++) {
-            data_tab[i][j] = (double) j+0.01*i;
-        }
         var_name_tab[i] = (char*) malloc(sizeof(char) * 128);
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
@@ -85,6 +82,11 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // emulate computing time
         sleep(delay);
+        for(int i=0; i<var_num; i++) {
+            for(int j=0; j<grid_size; j++) {
+                data_tab[i][j] = (double) j+0.01*i;
+            }
+        }
 
         Timer timer_put;
         timer_put.start();
@@ -168,9 +170,6 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
     for(int i=0; i<var_num; i++) {
         data_tab[i] = (float*) malloc(sizeof(float) * grid_size);
-        for(int j=0; j<grid_size; j++) {
-            data_tab[i][j] = (float) j+0.01*i;
-        }
         var_name_tab[i] = (char*) malloc(sizeof(char) * 128);
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
@@ -202,6 +201,11 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // emulate computing time
         sleep(delay);
+        for(int i=0; i<var_num; i++) {
+            for(int j=0; j<grid_size; j++) {
+                data_tab[i][j] = (float) j+0.01*i;
+            }
+        }
 
         Timer timer_put;
         timer_put.start();
