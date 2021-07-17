@@ -4,7 +4,7 @@ target_link_libraries(cpu_put PUBLIC MPI::MPI_CXX)
 target_link_libraries(cpu_put PUBLIC DataSpaces::DataSpaces)
 
 add_executable(gpu_cpu_put gpu_cpu_put.cpp)
-target_include_directories(cpu_put PRIVATE ${INCLUDE_PATH})
+target_include_directories(gpu_cpu_put PRIVATE ${INCLUDE_PATH})
 target_link_libraries(gpu_cpu_put PUBLIC MPI::MPI_CXX)
 target_compile_options(gpu_cpu_put PUBLIC ${OpenACC_CXX_OPTIONS})
 target_link_libraries(gpu_cpu_put PUBLIC ${OpenACC_CXX_OPTIONS})
