@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     std::vector<uint64_t> sp;
     int timestep;
     std::string listen_addr;
-    std::string elem_type = "double";
+    int elem_type = 1;
     int num_vars = 1;
     std::string log_name = "cpu_put.log";
     int delay = 0;
@@ -68,7 +68,8 @@ int main(int argc, char* argv[]) {
     app.add_option("--ts", timestep, "the number of timestep iterations")->required();
     app.add_option("-l, --listen_addr", listen_addr, "listen address of the mercury network");
     app.add_option("-t, --type", elem_type, "type of each element [float|double]. Defaults to double",
-                    true)->check(CLI::IsMember({"double", "float"}));
+                    true)->transform(CLI::CheckedTransformer(std::map<std::string, int>({{"double", 1},
+                    {"float", 2}})));
     app.add_option("-c, --var_count", num_vars, "the number of variables written in each iteration."
                     "Defaults to 1", true);
     app.add_option("--log", log_name, "output log file name. Default to cpu_put.log", true);
@@ -104,10 +105,10 @@ int main(int argc, char* argv[]) {
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    if(elem_type.compare("double") == 0){
+    if(elem_type==1){
         Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
                         log_name, terminate);
-    } else if(elem_type.compare("float") == 0) {
+    } else if(elem_type == 2) {
         Run<float>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
                         log_name, terminate);
     }
