@@ -101,12 +101,12 @@ int main(int argc, char* argv[]) {
     switch (elem_type)
     {
     case 1:
-        Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
+        Run<double, Mode::CPU>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
                         log_name, terminate);
         break;
 
     case 2:
-        Run<float>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
+        Run<float, Mode::CPU>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
                         log_name, terminate);
         break;
     

@@ -6,17 +6,20 @@
 #include "mpi.h"
 #include "dspaces.h"
 
+struct Mode {
+    enum {CPU, GPU_CPU, GPUDIRECT};
+};
+
+
 template <typename Data_t, typename Mode>
 struct Run {
     static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                     std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
                     std::string log_name, bool terminate);
-    
-    enum MODE {CPU, GPU_CPU, GPUDIRECT};
 };
 
 
-struct Run <double, Run::CPU> {
+struct Run <double, Mode::CPU> {
 static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
                 std::string log_name, bool terminate)
@@ -133,7 +136,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 }
 };
 
-struct Run <float, Run::CPU> {
+struct Run <float, Mode::CPU> {
 static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
                 std::string log_name, bool terminate)
