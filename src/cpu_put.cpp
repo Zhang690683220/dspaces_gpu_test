@@ -1,16 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <ctime>
-#include <chrono>
-#include <ratio>
 #include <iostream>
-#include <unistd.h>
 
-#include "dspaces.h"
 #include "CLI11.hpp"
-#include "timer.hpp"
-
+#include "mpi.h"
 #include "cpu_put.hpp"
 
 
@@ -35,12 +28,7 @@ void print_usage()
              <<"-k (optional)               - send server kill signal after writing is complete"<<std::endl;
 }
 
-int timer_cb(dspaces_client_t client, struct dspaces_req* req, void* timer) {
-    Timer* timer_ptr = (Timer*) timer;
-    double put_time_async = timer_ptr->stop();
-    std::cout<< "DSPACES_CPU_PUT() Version = "<< req->ver << " TIME(Sync) = " << put_time_async << "(ms)" << std::endl;
-    return 0;
-}
+
 
 int main(int argc, char* argv[]) {
 

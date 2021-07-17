@@ -1,10 +1,21 @@
 #ifndef CPU_PUT_HPP
 #define CPU_PUT_HPP
 
+#include <iostream>
 #include <cstring>
 #include "unistd.h"
 #include "mpi.h"
 #include "dspaces.h"
+#include "timer.hpp"
+
+/*
+int timer_cb(dspaces_client_t client, struct dspaces_req* req, void* timer) {
+    Timer* timer_ptr = (Timer*) timer;
+    double put_time_async = timer_ptr->stop();
+    std::cout<< "DSPACES_CPU_PUT() Version = "<< req->ver << " TIME(Sync) = " << put_time_async << "(ms)" << std::endl;
+    return 0;
+}
+*/
 
 template <typename Data_t>
 struct Run {
