@@ -53,6 +53,9 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
                 std::string log_name, bool terminate)
 {
+    constexpr int DEFAULT_DIM = 1024;
+    constexpr double DEFAULT_VALUE = 1.l;
+    constexpr int DEFAULT_TIMESTEP = 10;
     char* listen_addr_str = NULL;
     if(!listen_addr.empty()) {
         listen_addr_str = (char*) malloc(sizeof(char)*128);
@@ -101,12 +104,12 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     ub[1] = 1023;
     ub[2] = 1023;
 
-    dspaces_sub(ndcl, var_name, ts, sizeof(double), ndims, lb, ub, timer_cb, &timer_sync);
+    //dspaces_sub(ndcl, var_name, ts, sizeof(double), ndims, lb, ub, timer_cb, &timer_sync);
     sleep(3);
 
     #pragma acc host_data use_device(gpu_data)
     {
-        timer_sync.start();
+        //timer_sync.start();
         timer_async.start();
         dspaces_put(ndcl, var_name, ts, sizeof(double), ndims, lb, ub, gpu_data);
         put_time_async = timer_async.stop();
