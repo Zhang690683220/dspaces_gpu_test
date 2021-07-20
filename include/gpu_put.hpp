@@ -76,8 +76,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     }
 
     int size = grid_size;
-    std::cout<<"grid_size:"<<grid_size<<std::endl;
-    std::cout<<"size:"<<size<<std::endl;
+    
     double *gpu_data = (double*) malloc(sizeof(double) * grid_size);
 
     uint64_t* off = (uint64_t*) malloc(dims*sizeof(uint64_t));
@@ -93,17 +92,6 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         lb[i] = off[i];
         ub[i] = off[i] + sp[i] - 1;
     }
-    std::cout<<"lb={";
-    for(int i=0; i<dims; i++) {
-        std::cout<<lb[i]<<", ";
-    }
-    std::cout<<"}"<<std::endl;
-
-    std::cout<<"ub={";
-    for(int i=0; i<dims; i++) {
-        std::cout<<ub[i]<<", ";
-    }
-    std::cout<<"}"<<std::endl;
 
     Timer timer_sync;
     Timer timer_async;
@@ -113,11 +101,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     sprintf(var_name, "test_gpu_data");
 
     //double* gpu_data;
-    int dim0, dim1, dim2;
-    int ndims = 3;
-    dim0 = 64;
-    dim1 = DEFAULT_DIM;
-    dim2 = DEFAULT_DIM;
+    
     //int size = dim0*dim1*dim2;
 
     //gpu_data = (double*) malloc(size*sizeof(double));
@@ -126,13 +110,9 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
 #pragma acc enter data create(gpu_data[0:size])
 
-    #pragma acc parallel loop collapse(3)
-    for(int i=0; i<sp[0]; i++) {
-        for(int j=0; j<sp[1]; j++) {
-            for(int k=0; k<sp[2]; k++) {
-                gpu_data[i*sp[1]*sp[2]+j*sp[2]+k] = DEFAULT_VALUE;
-            }
-        }
+    #pragma acc parallel loop
+    for(int i=0; i<grid_size; i++) {
+        gpu_data[i] = (double) i;
     }
     /*
     uint64_t lb[3] = {0}, ub[3] = {0};
@@ -148,7 +128,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     {
         //timer_sync.start();
         timer_async.start();
-        dspaces_put(ndcl, var_name, ts, sizeof(double), ndims, lb, ub, gpu_data);
+        dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, gpu_data);
         put_time_async = timer_async.stop();
     }
 
