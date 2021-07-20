@@ -113,7 +113,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             
             #pragma acc parallel loop
             for(int j=0; j<grid_size; j++) {
-                data_tab[j] = (double) j;
+                data[j] = (double) j;
             }
             //Set<double>::set_value(data_tab[i], grid_size, i);
         //}
