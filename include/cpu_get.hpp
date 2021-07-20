@@ -76,7 +76,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         Timer timer_get;
         timer_get.start();
         for(int i=0; i<var_num; i++) {
-            dspaces_get(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab[i]);
+            dspaces_get(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab[i], -1);
         }
         double time_get = timer_get.stop();
 
@@ -126,6 +126,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     return 0;
 }
+};
 
 struct Run <float> {
 static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
@@ -188,7 +189,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         Timer timer_get;
         timer_get.start();
         for(int i=0; i<var_num; i++) {
-            dspaces_get(ndcl, var_name_tab[i], ts, sizeof(float), dims, lb, ub, data_tab[i]);
+            dspaces_get(ndcl, var_name_tab[i], ts, sizeof(float), dims, lb, ub, data_tab[i], -1);
         }
         double time_get = timer_get.stop();
 
@@ -238,6 +239,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     return 0;
 }
+};
 
 #endif // CPU_GET_HPP
 
