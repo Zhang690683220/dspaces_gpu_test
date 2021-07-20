@@ -23,6 +23,8 @@ static int set_value(double* ptr, uint64_t grid_size, int var_index)
     for(int i=0; i<grid_size; i++) {
         ptr[i] = (double) i+0.01*var_index;
     }
+
+    return 0;
 }
 };
 
@@ -33,6 +35,8 @@ static int set_value(float* ptr, uint64_t grid_size, int var_index)
     for(int i=0; i<grid_size; i++) {
         ptr[i] = (float) i+0.01*var_index;
     }
+
+    return 0;
 }
 };
 
