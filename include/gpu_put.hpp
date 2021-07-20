@@ -77,6 +77,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     int size = grid_size;
     std::cout<<"grid_size:"<<grid_size<<std::endl;
+    std::cout<<"size:"<<size<<std::endl;
     double *gpu_data = (double*) malloc(sizeof(double) * grid_size);
 
     uint64_t* off = (uint64_t*) malloc(dims*sizeof(uint64_t));
