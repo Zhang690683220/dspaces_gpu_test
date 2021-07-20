@@ -73,7 +73,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     double **data_tab = (double **) malloc(sizeof(double*) * var_num);
     char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
     for(int i=0; i<var_num; i++) {
-        data_tab[i] = (double*) ACCH::Malloc(sizeof(double) * grid_size);
+        data_tab[i] = (double*) malloc(sizeof(double) * grid_size);
         var_name_tab[i] = (char*) malloc(sizeof(char) * 128);
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
@@ -106,7 +106,12 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         // emulate computing time
         sleep(delay);
         for(int i=0; i<var_num; i++) {
-            Set<double>::set_value(data_tab[i], grid_size, i);
+            #pragma acc enter data create(data_tab[i][0:grid_size])
+            #pragma acc parallel loop
+            for(int j=0; j<grid_size; j++) {
+                data_tab[i][j] = (double) j+0.01*i;
+            }
+            //Set<double>::set_value(data_tab[i], grid_size, i);
         }
 
         Timer timer_put;
@@ -138,7 +143,9 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     }
 
     for(int i=0; i<var_num; i++) {
-        ACCH::Free(data_tab[i], sizeof(double) * grid_size);
+        //ACCH::Free(data_tab[i], sizeof(double) * grid_size);
+        #pragma acc exit data delete(data_tab[i][0:grid_size])
+        free(data_tab[i])
         free(var_name_tab[i]);
     }
     free(data_tab);
