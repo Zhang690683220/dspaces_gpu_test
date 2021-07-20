@@ -145,7 +145,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int i=0; i<var_num; i++) {
         //ACCH::Free(data_tab[i], sizeof(double) * grid_size);
         #pragma acc exit data delete(data_tab[i][0:grid_size])
-        free(data_tab[i])
+        free(data_tab[i]);
         free(var_name_tab[i]);
     }
     free(data_tab);
