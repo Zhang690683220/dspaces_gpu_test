@@ -112,8 +112,9 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         Timer timer_put;
         timer_put.start();
         for(int i=0; i<var_num; i++) {
+            #pragma acc host_data use_device(data_tab[i])
             dspaces_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub,
-                        ACCH::GetDevicePtr(data_tab[i]));
+                        data_tab[i]);
         }
         double time_put = timer_put.stop();
 
