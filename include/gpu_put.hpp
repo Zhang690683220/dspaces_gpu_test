@@ -69,7 +69,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     double **data_tab = (double **) malloc(sizeof(double*) * var_num);
     char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
     for(int i=0; i<var_num; i++) {
-        data_tab[i] = (double*) ACCH::malloc(sizeof(double) * grid_size);
+        data_tab[i] = (double*) ACCH::Malloc(sizeof(double) * grid_size);
         var_name_tab[i] = (char*) malloc(sizeof(char) * 128);
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
@@ -133,7 +133,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     }
 
     for(int i=0; i<var_num; i++) {
-        ACCH::Free(data_tab[i]);
+        ACCH::Free(data_tab[i], sizeof(double) * grid_size);
         free(var_name_tab[i]);
     }
     free(data_tab);
@@ -251,7 +251,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     }
 
     for(int i=0; i<var_num; i++) {
-        ACCH::Free(data_tab[i]);
+        ACCH::Free(data_tab[i], sizeof(double) * grid_size);
         free(var_name_tab[i]);
     }
     free(data_tab);
