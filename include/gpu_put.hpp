@@ -70,6 +70,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         grid_size *= sp[i];
     }
 
+    double *data = (double*) malloc(sizeof(double) * grid_size);
+
     double **data_tab = (double **) malloc(sizeof(double*) * var_num);
     char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
     for(int i=0; i<var_num; i++) {
@@ -102,24 +104,26 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         log << "step, put_ms" << std::endl;
     }
 
+    #pragma acc enter data create(data[0:grid_size])
+
     for(int ts=1; ts<=timesteps; ts++) {
         // emulate computing time
         sleep(delay);
-        for(int i=0; i<var_num; i++) {
-            #pragma acc enter data create(data_tab[i][0:grid_size])
+        //for(int i=0; i<var_num; i++) {
+            
             #pragma acc parallel loop
             for(int j=0; j<grid_size; j++) {
-                data_tab[i][j] = (double) j+0.01*i;
+                data_tab[j] = (double) j;
             }
             //Set<double>::set_value(data_tab[i], grid_size, i);
-        }
+        //}
 
         Timer timer_put;
         timer_put.start();
         for(int i=0; i<var_num; i++) {
-            #pragma acc host_data use_device(data_tab[i])
+            #pragma acc host_data use_device(data)
             dspaces_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub,
-                        data_tab[i]);
+                        data);
         }
         double time_put = timer_put.stop();
 
@@ -141,10 +145,11 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             free(avg_time_put);
         }
     }
+    #pragma acc exit data delete(data[0:grid_size])
 
     for(int i=0; i<var_num; i++) {
         //ACCH::Free(data_tab[i], sizeof(double) * grid_size);
-        #pragma acc exit data delete(data_tab[i][0:grid_size])
+        
         free(data_tab[i]);
         free(var_name_tab[i]);
     }
