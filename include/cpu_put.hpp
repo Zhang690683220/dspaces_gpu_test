@@ -82,35 +82,39 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // emulate computing time
         sleep(delay);
-        for(int i=0; i<var_num; i++) {
-            for(int j=0; j<grid_size; j++) {
-                data_tab[i][j] = (double) j+0.01*i;
+
+        // output every $interval timesteps from timestep 1
+        if(ts%interval==1) {
+            for(int i=0; i<var_num; i++) {
+                for(int j=0; j<grid_size; j++) {
+                    data_tab[i][j] = (double) j+0.01*i;
+                }
             }
-        }
 
-        Timer timer_put;
-        timer_put.start();
-        for(int i=0; i<var_num; i++) {
-            dspaces_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab[i]);
-        }
-        double time_put = timer_put.stop();
-
-        double *avg_time_put = nullptr;
-
-        if(rank == 0) {
-            avg_time_put = (double*) malloc(sizeof(double)*nprocs);
-        }
-
-        MPI_Gather(&time_put, 1, MPI_DOUBLE, avg_time_put, 1, MPI_DOUBLE, 0, gcomm);
-
-        if(rank == 0) {
-            for(int i=0; i<nprocs; i++) {
-                avg_put[ts-1] += avg_time_put[i];
+            Timer timer_put;
+            timer_put.start();
+            for(int i=0; i<var_num; i++) {
+                dspaces_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab[i]);
             }
-            avg_put[ts-1] /= nprocs;
-            log << ts << ", " << avg_put[ts-1] << std::endl;
-            total_avg += avg_put[ts-1];
-            free(avg_time_put);
+            double time_put = timer_put.stop();
+
+            double *avg_time_put = nullptr;
+
+            if(rank == 0) {
+                avg_time_put = (double*) malloc(sizeof(double)*nprocs);
+            }
+
+            MPI_Gather(&time_put, 1, MPI_DOUBLE, avg_time_put, 1, MPI_DOUBLE, 0, gcomm);
+
+            if(rank == 0) {
+                for(int i=0; i<nprocs; i++) {
+                    avg_put[ts-1] += avg_time_put[i];
+                }
+                avg_put[ts-1] /= nprocs;
+                log << ts << ", " << avg_put[ts-1] << std::endl;
+                total_avg += avg_put[ts-1];
+                free(avg_time_put);
+            }
         }
     }
 
@@ -201,35 +205,37 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // emulate computing time
         sleep(delay);
-        for(int i=0; i<var_num; i++) {
-            for(int j=0; j<grid_size; j++) {
-                data_tab[i][j] = (float) j+0.01*i;
+        if(ts%interval==1) {
+            for(int i=0; i<var_num; i++) {
+                for(int j=0; j<grid_size; j++) {
+                    data_tab[i][j] = (float) j+0.01*i;
+                }
             }
-        }
 
-        Timer timer_put;
-        timer_put.start();
-        for(int i=0; i<var_num; i++) {
+            Timer timer_put;
+            timer_put.start();
+            for(int i=0; i<var_num; i++) {
             dspaces_put(ndcl, var_name_tab[i], ts, sizeof(float), dims, lb, ub, data_tab[i]);
-        }
-        double time_put = timer_put.stop();
-
-        double *avg_time_put = nullptr;
-
-        if(rank == 0) {
-            avg_time_put = (double*) malloc(sizeof(double)*nprocs);
-        }
-
-        MPI_Gather(&time_put, 1, MPI_DOUBLE, avg_time_put, 1, MPI_DOUBLE, 0, gcomm);
-
-        if(rank == 0) {
-            for(int i=0; i<nprocs; i++) {
-                avg_put[ts-1] += avg_time_put[i];
             }
-            avg_put[ts-1] /= nprocs;
-            log << ts << ", " << avg_put[ts-1] << std::endl;
-            total_avg += avg_put[ts-1];
-            free(avg_time_put);
+            double time_put = timer_put.stop();
+
+            double *avg_time_put = nullptr;
+
+            if(rank == 0) {
+                avg_time_put = (double*) malloc(sizeof(double)*nprocs);
+            }
+
+            MPI_Gather(&time_put, 1, MPI_DOUBLE, avg_time_put, 1, MPI_DOUBLE, 0, gcomm);
+
+            if(rank == 0) {
+                for(int i=0; i<nprocs; i++) {
+                    avg_put[ts-1] += avg_time_put[i];
+                }
+                avg_put[ts-1] /= nprocs;
+                log << ts << ", " << avg_put[ts-1] << std::endl;
+                total_avg += avg_put[ts-1];
+                free(avg_time_put);
+            }
         }
     }
 

@@ -8,7 +8,7 @@
 
 void print_usage()
 {
-    std::cerr<<"Usage: cpu_put --dims <dims> --np <np[0] .. np[dims-1]> --sp <sp[0] ... sp[dims-1]> "
+    std::cerr<<"Usage: gpu_cpu_put --dims <dims> --np <np[0] .. np[dims-1]> --sp <sp[0] ... sp[dims-1]> "
                "--ts <timesteps> [-s <elem_size>] [-c <var_count>] [--log <log_file>] [--delay <delay_second>] "
                "[--interval <output_freq>] [-t]"<<std::endl
              <<"--dims                      - number of data dimensions. Must be [1-8]"<<std::endl
@@ -31,7 +31,7 @@ void print_usage()
 
 int main(int argc, char* argv[]) {
 
-    CLI::App app{"CPU PUT Emulator for DataSpaces"};
+    CLI::App app{"GPU-CPU PUT Emulator for DataSpaces"};
     int dims;              // number of dimensions
     std::vector<int> np;
     std::vector<uint64_t> sp;
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     std::string listen_addr;
     int elem_type = 1;
     int num_vars = 1;
-    std::string log_name = "cpu_put.log";
+    std::string log_name = "gpu_cpu_put.log";
     int delay = 0;
     int interval = 1;
     bool terminate = false;
