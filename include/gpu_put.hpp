@@ -76,6 +76,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     }
 
     int size = grid_size;
+    std::cout<<"grid_size:"<<grid_size<<std::endl;
     double *gpu_data = (double*) malloc(sizeof(double) * grid_size);
 
     uint64_t* off = (uint64_t*) malloc(dims*sizeof(uint64_t));
@@ -91,6 +92,17 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         lb[i] = off[i];
         ub[i] = off[i] + sp[i] - 1;
     }
+    std::cout<<"lb={";
+    for(int i=0; i<dims; i++) {
+        std::cout<<lb[i]<<", ";
+    }
+    std::cout<<"}"<<std::endl;
+
+    std::cout<<"ub={";
+    for(int i=0; i<dims; i++) {
+        std::cout<<ub[i]<<", ";
+    }
+    std::cout<<"}"<<std::endl;
 
     Timer timer_sync;
     Timer timer_async;
