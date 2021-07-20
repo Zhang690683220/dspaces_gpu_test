@@ -56,15 +56,20 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     constexpr int DEFAULT_DIM = 1024;
     constexpr double DEFAULT_VALUE = 1.l;
     constexpr int DEFAULT_TIMESTEP = 10;
+    
+    int rank, nprocs;
+    MPI_Comm_size(gcomm, &nprocs);
+    MPI_Comm_rank(gcomm, &rank);
+    //MPI_Barrier(MPI_COMM_WORLD);
+
+    dspaces_client_t ndcl = dspaces_CLIENT_NULL;
     char* listen_addr_str = NULL;
     if(!listen_addr.empty()) {
         listen_addr_str = (char*) malloc(sizeof(char)*128);
         strcpy(listen_addr_str, listen_addr.c_str());
     }
-    int rank, nprocs;
-    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Barrier(MPI_COMM_WORLD);
+    dspaces_init(rank, &ndcl, listen_addr_str);
+
     Timer timer_sync;
     Timer timer_async;
     double put_time_async;
