@@ -228,6 +228,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 total_avg += avg_put[ts-1];
                 free(avg_time_put);
             }
+        }
     }
 
     for(int i=0; i<var_num; i++) {
