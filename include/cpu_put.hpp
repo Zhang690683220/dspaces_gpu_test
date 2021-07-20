@@ -132,7 +132,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(listen_addr_str);
 
     if(rank == 0) {
-        total_avg /= timesteps;
+        total_avg /= (timesteps/interval);
         log << "Total" << ", " << total_avg << std::endl;
         log.close();
         if(terminate) {
@@ -253,7 +253,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(listen_addr_str);
 
     if(rank == 0) {
-        total_avg /= timesteps;
+        total_avg /= (timesteps/interval);
         log << "Total" << ", " << total_avg << std::endl;
         log.close();
         if(terminate) {

@@ -1,5 +1,5 @@
-#ifndef GPU_CPU_PUT_HPP
-#define GPU_CPU_PUT_HPP
+#ifndef GPU_CPU_PUT_LOCAL_HPP
+#define GPU_CPU_PUT_LOCAL_HPP
 
 #include <iostream>
 #include <cstring>
@@ -85,7 +85,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             Timer timer_put;
             timer_put.start();
             for(int i=0; i<var_num; i++) {
-                dspaces_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab[i]);
+                dspaces_put_local(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab[i]);
             }
             double time_put = timer_put.stop();
 
@@ -207,7 +207,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             Timer timer_put;
             timer_put.start();
             for(int i=0; i<var_num; i++) {
-                dspaces_put(ndcl, var_name_tab[i], ts, sizeof(float), dims, lb, ub, data_tab[i]);
+                dspaces_put_local(ndcl, var_name_tab[i], ts, sizeof(float), dims, lb, ub, data_tab[i]);
             }
             double time_put = timer_put.stop();
 
@@ -261,5 +261,5 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 }
 };
 
-#endif // GPU_CPU_PUT_HPP
+#endif // GPU_CPU_PUT_LOCAL_HPP
 

@@ -15,6 +15,13 @@ target_compile_options(gpu_cpu_put PUBLIC ${OpenACC_CXX_OPTIONS})
 target_link_libraries(gpu_cpu_put PUBLIC ${OpenACC_CXX_OPTIONS})
 target_link_libraries(gpu_cpu_put PUBLIC DataSpaces::DataSpaces)
 
+add_executable(gpu_cpu_put_local gpu_cpu_put_local.cpp)
+target_include_directories(gpu_cpu_put_local PRIVATE ${INCLUDE_PATH})
+target_link_libraries(gpu_cpu_put_local PUBLIC MPI::MPI_CXX)
+target_compile_options(gpu_cpu_put_local PUBLIC ${OpenACC_CXX_OPTIONS})
+target_link_libraries(gpu_cpu_put_local PUBLIC ${OpenACC_CXX_OPTIONS})
+target_link_libraries(gpu_cpu_put_local PUBLIC DataSpaces::DataSpaces)
+
 add_executable(gpu_put gpu_put.cpp ACCH.cpp)
 target_link_libraries(gpu_put PUBLIC MPI::MPI_CXX)
 target_compile_options(gpu_put PUBLIC ${OpenACC_CXX_OPTIONS})
