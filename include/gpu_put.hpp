@@ -70,6 +70,27 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     }
     dspaces_init(rank, &ndcl, listen_addr_str);
 
+    uint64_t grid_size = 1;
+    for(int i=0; i<dims; i++) {
+        grid_size *= sp[i];
+    }
+
+    double *data = (double*) malloc(sizeof(double) * grid_size);
+
+    uint64_t* off = (uint64_t*) malloc(dims*sizeof(uint64_t));
+    uint64_t* lb = (uint64_t*) malloc(dims*sizeof(uint64_t));
+    uint64_t* ub = (uint64_t*) malloc(dims*sizeof(uint64_t));
+
+    // get the lb & ub for each rank
+    for(int i=0; i<dims; i++) {
+        int tmp = rank;
+        for(int j=0; j<i; j++)
+            tmp /= np[j];
+        off[i] = tmp % np[i] * sp[i];
+        lb[i] = off[i];
+        ub[i] = off[i] + sp[i] - 1;
+    }
+
     Timer timer_sync;
     Timer timer_async;
     double put_time_async;
@@ -89,35 +110,31 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     for(int ts=1; ts<=DEFAULT_TIMESTEP; ts++) {
 
-#pragma acc enter data create(gpu_data[0:size])
+#pragma acc enter data create(data[0:grid_size])
 
-    #pragma acc parallel loop collapse(3)
-    for(int i=0; i<dim0; i++) {
-        for(int j=0; j<dim1; j++) {
-            for(int k=0; k<dim2; k++) {
-                gpu_data[i*dim1*dim2+j*dim2+k] = DEFAULT_VALUE;
-            }
-        }
+    #pragma acc parallel loop
+    for(int i=0; i<grid_size; i++) {
+        data[i] = DEFAULT_VALUE;
     }
-
+    /*
     uint64_t lb[3] = {0}, ub[3] = {0};
 
     ub[0] = 63;
     ub[1] = 1023;
     ub[2] = 1023;
-
+    */
     //dspaces_sub(ndcl, var_name, ts, sizeof(double), ndims, lb, ub, timer_cb, &timer_sync);
     sleep(3);
 
-    #pragma acc host_data use_device(gpu_data)
+    #pragma acc host_data use_device(data)
     {
         //timer_sync.start();
         timer_async.start();
-        dspaces_put(ndcl, var_name, ts, sizeof(double), ndims, lb, ub, gpu_data);
+        dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data);
         put_time_async = timer_async.stop();
     }
 
-#pragma acc exit data delete(gpu_data[0:size])
+#pragma acc exit data delete(data[0:grid_size])
 
     std::cout<< "DSPACES_GPU_PUT() Version = "<< ts << " TIME(ASync) = " << put_time_async << "(ms)" << std::endl;
 
