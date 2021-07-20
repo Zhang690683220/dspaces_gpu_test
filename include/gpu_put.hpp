@@ -74,9 +74,6 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     Timer timer_async;
     double put_time_async;
 
-    dspaces_client_t ndcl = dspaces_CLIENT_NULL;
-    dspaces_init(rank, &ndcl, listen_addr_str);
-
     char var_name[128];
     sprintf(var_name, "test_gpu_data");
 
