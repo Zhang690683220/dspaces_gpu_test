@@ -77,7 +77,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     double **data_tab = (double **) malloc(sizeof(double*) * var_num);
     char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
     for(int i=0; i<var_num; i++) {
-        data_tab[i] = (double*) malloc(sizeof(double) * grid_size);
+        data_tab[i] = (double*) ACCH::Malloc(sizeof(double) * grid_size);
         var_name_tab[i] = (char*) malloc(sizeof(char) * 128);
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
@@ -109,9 +109,9 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         sleep(delay);
         if((ts-1)%interval==0) {
-            #pragma acc enter data create(data_tab[0:var_num][0:grid_size])
+            //#pragma acc enter data create(data_tab[0:var_num][0:grid_size])
             for(int i=0; i<var_num; i++) {
-                #pragma acc parallel loop
+                #pragma acc parallel loop present(data_tab[i][0:grid_size])
                 for(int j=0; j<grid_size; j++) {
                     data_tab[i][j] = (double) j+0.01*i;
                 }
@@ -120,9 +120,9 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             Timer timer_put;
             timer_put.start();
             for(int i=0; i<var_num; i++) {
-                #pragma acc host_data use_device(data_tab[i])
+                //#pragma acc host_data use_device(data_tab[i])
                 {
-                    dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data_tab[i]);
+                    dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, ACCH::GetDevicePtr(data_tab[i]));
                 }
             }
             double time_put = timer_put.stop();
@@ -144,13 +144,13 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 total_avg += avg_put[ts-1];
                 free(avg_time_put);
             }
-            #pragma acc exit data delete(data_tab[0:var_num][0:grid_size])
+            //#pragma acc exit data delete(data_tab[0:var_num][0:grid_size])
             
         }
     }
 
     for(int i=0; i<var_num; i++) {
-        free(data_tab[i]);
+        ACCH::Free(data_tab[i]);
         free(var_name_tab[i]);
     }
     free(data_tab);
