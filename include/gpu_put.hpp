@@ -150,7 +150,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     }
 
     for(int i=0; i<var_num; i++) {
-        ACCH::Free(data_tab[i]);
+        ACCH::Free(data_tab[i], sizeof(double) * grid_size);
         free(var_name_tab[i]);
     }
     free(data_tab);
