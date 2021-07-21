@@ -110,7 +110,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         if((ts-1)%interval==0) {
             
             //for(int i=0; i<var_num; i++) {
-                
+            #pragma acc enter data create(data[0:grid_size])
                 #pragma acc parallel loop
                 for(int j=0; j<grid_size; j++) {
                     data[j] = (double) j;
@@ -120,7 +120,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             Timer timer_put;
             timer_put.start();
             //for(int i=0; i<var_num; i++) {
-                #pragma acc host_data use_device(data_tab[i])
+                #pragma acc host_data use_device(data)
                 {
                     dspaces_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data);
                 }
@@ -144,6 +144,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 total_avg += avg_put[ts-1];
                 free(avg_time_put);
             }
+            #pragma acc exit data delete(data[0:grid_size])
             
         }
     }
