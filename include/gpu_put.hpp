@@ -71,6 +71,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         grid_size *= sp[i];
     }
 
+    char *var_name = (char *) malloc(sizeof(char) * 128);
     double *data = (double*) malloc(sizeof(double) * grid_size);
     
     double **data_tab = (double **) malloc(sizeof(double*) * var_num);
