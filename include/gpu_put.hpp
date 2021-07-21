@@ -71,7 +71,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         grid_size *= sp[i];
     }
 
-    
+    double *data = (double*) malloc(sizeof(double) * grid_size);
     
     double **data_tab = (double **) malloc(sizeof(double*) * var_num);
     char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
@@ -109,22 +109,22 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         sleep(delay);
         if((ts-1)%interval==0) {
             
-            for(int i=0; i<var_num; i++) {
-                #pragma acc enter data create(data_tab[i][0:grid_size])
+            //for(int i=0; i<var_num; i++) {
+                
                 #pragma acc parallel loop
                 for(int j=0; j<grid_size; j++) {
-                    data_tab[i][j] = (double) j+0.01*i;
+                    data[j] = (double) j;
                 }
-            }
+            //}
             
             Timer timer_put;
             timer_put.start();
-            for(int i=0; i<var_num; i++) {
+            //for(int i=0; i<var_num; i++) {
                 #pragma acc host_data use_device(data_tab[i])
                 {
-                    dspaces_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab[i]);
+                    dspaces_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data);
                 }
-            }
+            //}
             double time_put = timer_put.stop();
 
             double *avg_time_put = nullptr;
@@ -144,9 +144,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 total_avg += avg_put[ts-1];
                 free(avg_time_put);
             }
-            for(int i=0; i<var_num; i++) {
-            #pragma acc exit data delete(data_tab[i][0:grid_size])
-            }
+            
         }
     }
 
