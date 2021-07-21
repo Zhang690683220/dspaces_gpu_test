@@ -74,7 +74,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // emulate computing time
         sleep(delay);
-        if(ts%interval==1) {
+        if((ts-1)%interval==0) {
             for(int i=0; i<var_num; i++) {
                 #pragma acc parallel loop copy(data_tab[i][0:grid_size])
                 for(int j=0; j<grid_size; j++) {
@@ -196,7 +196,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // emulate computing time
         sleep(delay);
-        if(ts%interval==1) {
+        if((ts-1)%interval==0) {
             for(int i=0; i<var_num; i++) {
                 #pragma acc parallel loop copy(data_tab[i][0:grid_size])
                 for(int j=0; j<grid_size; j++) {
