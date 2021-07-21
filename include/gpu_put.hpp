@@ -105,7 +105,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         log << "step, put_ms" << std::endl;
     }
 
-    for(int ts=1; ts<=DEFAULT_TIMESTEP; ts++) {
+    for(int ts=1; ts<=timesteps; ts++) {
         sleep(delay);
         if(ts%interval==1) {
             #pragma acc enter data create(data_tab[0:var_num][0:grid_size])
