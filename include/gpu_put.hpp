@@ -305,82 +305,82 @@ static int put_fixed(MPI_Comm gcomm, std::string listen_addr, int dims, std::vec
             
             #pragma acc host_data use_device(data0)
             {
-                dspaces_put(ndcl, var_name_tab[0], ts, sizeof(double), dims, lb, ub, data0);
+                dspaces_put(ndcl, "test_var_0", ts, sizeof(double), dims, lb, ub, data0);
             }
 
             #pragma acc host_data use_device(data1)
             {
-                dspaces_put(ndcl, var_name_tab[1], ts, sizeof(double), dims, lb, ub, data1);
+                dspaces_put(ndcl, "test_var_1", ts, sizeof(double), dims, lb, ub, data1);
             }
 
             #pragma acc host_data use_device(data2)
             {
-                dspaces_put(ndcl, var_name_tab[2], ts, sizeof(double), dims, lb, ub, data2);
+                dspaces_put(ndcl, "test_var_2", ts, sizeof(double), dims, lb, ub, data2);
             }
 
             #pragma acc host_data use_device(data3)
             {
-                dspaces_put(ndcl, var_name_tab[3], ts, sizeof(double), dims, lb, ub, data3);
+                dspaces_put(ndcl, "test_var_3", ts, sizeof(double), dims, lb, ub, data3);
             }
 
             #pragma acc host_data use_device(data4)
             {
-                dspaces_put(ndcl, var_name_tab[4], ts, sizeof(double), dims, lb, ub, data4);
+                dspaces_put(ndcl, "test_var_4", ts, sizeof(double), dims, lb, ub, data4);
             }
 
             #pragma acc host_data use_device(data5)
             {
-                dspaces_put(ndcl, var_name_tab[5], ts, sizeof(double), dims, lb, ub, data5);
+                dspaces_put(ndcl, "test_var_5", ts, sizeof(double), dims, lb, ub, data5);
             }
 
             #pragma acc host_data use_device(data6)
             {
-                dspaces_put(ndcl, var_name_tab[6], ts, sizeof(double), dims, lb, ub, data6);
+                dspaces_put(ndcl, "test_var_6", ts, sizeof(double), dims, lb, ub, data6);
             }
 
             #pragma acc host_data use_device(data7)
             {
-                dspaces_put(ndcl, var_name_tab[7], ts, sizeof(double), dims, lb, ub, data7);
+                dspaces_put(ndcl, "test_var_7", ts, sizeof(double), dims, lb, ub, data7);
             }
 
             #pragma acc host_data use_device(data8)
             {
-                dspaces_put(ndcl, var_name_tab[8], ts, sizeof(double), dims, lb, ub, data8);
+                dspaces_put(ndcl, "test_var_8", ts, sizeof(double), dims, lb, ub, data8);
             }
 
             #pragma acc host_data use_device(data9)
             {
-                dspaces_put(ndcl, var_name_tab[9], ts, sizeof(double), dims, lb, ub, data9);
+                dspaces_put(ndcl, "test_var_9", ts, sizeof(double), dims, lb, ub, data9);
             }
 
             #pragma acc host_data use_device(data10)
             {
-                dspaces_put(ndcl, var_name_tab[10], ts, sizeof(double), dims, lb, ub, data10);
+                dspaces_put(ndcl, "test_var_10", ts, sizeof(double), dims, lb, ub, data10);
             }
 
             #pragma acc host_data use_device(data11)
             {
-                dspaces_put(ndcl, var_name_tab[11], ts, sizeof(double), dims, lb, ub, data11);
+                dspaces_put(ndcl, "test_var_11", ts, sizeof(double), dims, lb, ub, data11);
             }
 
             #pragma acc host_data use_device(data12)
             {
-                dspaces_put(ndcl, var_name_tab[12], ts, sizeof(double), dims, lb, ub, data12);
+                dspaces_put(ndcl, "test_var_12", ts, sizeof(double), dims, lb, ub, data12);
             }
 
             #pragma acc host_data use_device(data13)
             {
-                dspaces_put(ndcl, var_name_tab[13], ts, sizeof(double), dims, lb, ub, data13);
+                dspaces_put(ndcl, "test_var_13", ts, sizeof(double), dims, lb, ub, data13);
             }
 
             #pragma acc host_data use_device(data14)
             {
-                dspaces_put(ndcl, var_name_tab[14], ts, sizeof(double), dims, lb, ub, data14);
+                dspaces_put(ndcl, "test_var_14", ts, sizeof(double), dims, lb, ub, data14);
             }
 
             #pragma acc host_data use_device(data15)
             {
-                dspaces_put(ndcl, var_name_tab[15], ts, sizeof(double), dims, lb, ub, data15);
+                dspaces_put(ndcl, "test_var_15", ts, sizeof(double), dims, lb, ub, data15);
             }
             
             double time_put = timer_put.stop();
