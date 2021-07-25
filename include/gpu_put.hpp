@@ -441,10 +441,12 @@ static int put_fixed(MPI_Comm gcomm, std::string listen_addr, int dims, std::vec
     free(data13);
     free(data14);
     free(data15);
+    /*
     for(int i=0; i<var_num; i++) {
         free(var_name_tab[i]);
     }
-    free(var_name_tab);
+    */
+    //free(var_name_tab);
 
     free(off);
     free(lb);
