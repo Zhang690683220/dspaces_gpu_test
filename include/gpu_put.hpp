@@ -228,9 +228,8 @@ static int put_fixed(MPI_Comm gcomm, std::string listen_addr, int dims, std::vec
     double *data14 = (double*) malloc(sizeof(double) * grid_size);
     double *data15 = (double*) malloc(sizeof(double) * grid_size);
 
-    char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
+    char var_name_tab[16][128];
     for(int i=0; i<var_num; i++) {
-        var_name_tab[i] = (char*) malloc(sizeof(char) * 128);
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
 
