@@ -258,7 +258,12 @@ static int put_fixed(MPI_Comm gcomm, std::string listen_addr, int dims, std::vec
         log << "step, put_ms" << std::endl;
     }
     
-    #pragma acc enter data create(data0[0:grid_size])
+    
+
+    for(int ts=1; ts<=timesteps; ts++) {
+        sleep(delay);
+        if((ts-1)%interval==0) {
+            #pragma acc enter data create(data0[0:grid_size])
     #pragma acc enter data create(data1[0:grid_size])
     #pragma acc enter data create(data2[0:grid_size])
     #pragma acc enter data create(data3[0:grid_size])
@@ -274,10 +279,6 @@ static int put_fixed(MPI_Comm gcomm, std::string listen_addr, int dims, std::vec
     #pragma acc enter data create(data13[0:grid_size])
     #pragma acc enter data create(data14[0:grid_size])
     #pragma acc enter data create(data15[0:grid_size])
-
-    for(int ts=1; ts<=timesteps; ts++) {
-        sleep(delay);
-        if((ts-1)%interval==0) {
             
             #pragma acc parallel loop
             for(int j=0; j<grid_size; j++) {
@@ -305,82 +306,82 @@ static int put_fixed(MPI_Comm gcomm, std::string listen_addr, int dims, std::vec
             
             #pragma acc host_data use_device(data0)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data0);
+                dspaces_put(ndcl, var_name_tab[0], ts, sizeof(double), dims, lb, ub, data0);
             }
 
             #pragma acc host_data use_device(data1)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data1);
+                dspaces_put(ndcl, var_name_tab[1], ts, sizeof(double), dims, lb, ub, data1);
             }
 
             #pragma acc host_data use_device(data2)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data2);
+                dspaces_put(ndcl, var_name_tab[2], ts, sizeof(double), dims, lb, ub, data2);
             }
 
             #pragma acc host_data use_device(data3)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data3);
+                dspaces_put(ndcl, var_name_tab[3], ts, sizeof(double), dims, lb, ub, data3);
             }
 
             #pragma acc host_data use_device(data4)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data4);
+                dspaces_put(ndcl, var_name_tab[4], ts, sizeof(double), dims, lb, ub, data4);
             }
 
             #pragma acc host_data use_device(data5)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data5);
+                dspaces_put(ndcl, var_name_tab[5], ts, sizeof(double), dims, lb, ub, data5);
             }
 
             #pragma acc host_data use_device(data6)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data6);
+                dspaces_put(ndcl, var_name_tab[6], ts, sizeof(double), dims, lb, ub, data6);
             }
 
             #pragma acc host_data use_device(data7)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data7);
+                dspaces_put(ndcl, var_name_tab[7], ts, sizeof(double), dims, lb, ub, data7);
             }
 
             #pragma acc host_data use_device(data8)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data8);
+                dspaces_put(ndcl, var_name_tab[8], ts, sizeof(double), dims, lb, ub, data8);
             }
 
             #pragma acc host_data use_device(data9)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data9);
+                dspaces_put(ndcl, var_name_tab[9], ts, sizeof(double), dims, lb, ub, data9);
             }
 
             #pragma acc host_data use_device(data10)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data10);
+                dspaces_put(ndcl, var_name_tab[10], ts, sizeof(double), dims, lb, ub, data10);
             }
 
             #pragma acc host_data use_device(data11)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data11);
+                dspaces_put(ndcl, var_name_tab[11], ts, sizeof(double), dims, lb, ub, data11);
             }
 
             #pragma acc host_data use_device(data12)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data12);
+                dspaces_put(ndcl, var_name_tab[12], ts, sizeof(double), dims, lb, ub, data12);
             }
 
             #pragma acc host_data use_device(data13)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data13);
+                dspaces_put(ndcl, var_name_tab[13], ts, sizeof(double), dims, lb, ub, data13);
             }
 
             #pragma acc host_data use_device(data14)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data14);
+                dspaces_put(ndcl, var_name_tab[14], ts, sizeof(double), dims, lb, ub, data14);
             }
 
             #pragma acc host_data use_device(data15)
             {
-                dspaces_put(ndcl, var_name, ts, sizeof(double), dims, lb, ub, data15);
+                dspaces_put(ndcl, var_name_tab[15], ts, sizeof(double), dims, lb, ub, data15);
             }
             
             double time_put = timer_put.stop();
@@ -402,12 +403,8 @@ static int put_fixed(MPI_Comm gcomm, std::string listen_addr, int dims, std::vec
                 total_avg += avg_put[ts-1];
                 free(avg_time_put);
             }
-            
-            
-        }
-    }
 
-    #pragma acc exit data delete(data0[0:grid_size])
+        #pragma acc exit data delete(data0[0:grid_size])
     #pragma acc exit data delete(data1[0:grid_size])
     #pragma acc exit data delete(data2[0:grid_size])
     #pragma acc exit data delete(data3[0:grid_size])
@@ -422,7 +419,12 @@ static int put_fixed(MPI_Comm gcomm, std::string listen_addr, int dims, std::vec
     #pragma acc exit data delete(data12[0:grid_size])
     #pragma acc exit data delete(data13[0:grid_size])
     #pragma acc exit data delete(data14[0:grid_size])
-    #pragma acc exit data delete(data15[0:grid_size])
+    #pragma acc exit data delete(data15[0:grid_size])    
+            
+        }
+    }
+
+    
 
     free(data0);
     free(data1);
