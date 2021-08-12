@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
         print_usage();
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
-/*
+
     switch (elem_type)
     {
     case 1:
@@ -102,8 +102,8 @@ int main(int argc, char* argv[]) {
         MPI_Abort(MPI_COMM_WORLD, 1);
         break;
     }
-*/
-    Run<double>::put_fixed(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
+
+    //Run<double>::put_fixed(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
                         log_name, terminate);
 
     
