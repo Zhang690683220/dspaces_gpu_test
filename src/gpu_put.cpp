@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
     }
 
     //Run<double>::put_fixed(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
-                        log_name, terminate);
+    //                    log_name, terminate);
 
     
 
