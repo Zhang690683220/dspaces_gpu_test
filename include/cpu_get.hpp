@@ -15,6 +15,7 @@ struct Run {
                     std::string log_name, bool terminate);
 };
 
+template <>
 struct Run <double> {
 static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
@@ -128,6 +129,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 }
 };
 
+template <>
 struct Run <float> {
 static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
