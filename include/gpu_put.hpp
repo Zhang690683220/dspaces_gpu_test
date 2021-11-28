@@ -15,7 +15,7 @@ struct Set {
 static int set_value(Data_t* ptr, uint64_t grid_size, int var_index);
 };
 
-
+template <>
 struct Set <double> {
 static int set_value(double* ptr, uint64_t grid_size, int var_index)
 {
@@ -28,6 +28,7 @@ static int set_value(double* ptr, uint64_t grid_size, int var_index)
 }
 };
 
+template <>
 struct Set <float> {
 static int set_value(float* ptr, uint64_t grid_size, int var_index)
 {
@@ -51,7 +52,7 @@ struct Run {
                     std::string log_name, bool terminate);
 };
 
-
+template <>
 struct Run <double> {
 static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
@@ -184,6 +185,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     
 }
 
+template <>
 // gpu_put() 16x 3D vars, only for presentation
 static int put_fixed(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
