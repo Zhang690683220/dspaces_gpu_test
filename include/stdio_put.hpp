@@ -98,8 +98,9 @@ static int put(MPI_Comm gcomm, int dims, std::vector<int>& np,
             timer_put.start();
             for(int i=0; i<var_num; i++) {
                 std::ofstream ofs;
-                ofs.(filename[i], std::ios::out | std::ios::trunc | std::ios::binary);
-                ofs.write(data_tab[i], grid_size*sizeof(double));
+                ofs.open(filename[i], std::ios::out | std::ios::trunc | std::ios::binary);
+                char *ptr = (char*)(data_tab[i]);
+                ofs.write(ptr, grid_size*sizeof(double));
                 if(ofs.fail()) {
                     ofs.close();
                     MPI_Abort(gcomm, -1);
@@ -131,7 +132,6 @@ static int put(MPI_Comm gcomm, int dims, std::vector<int>& np,
 
     for(int i=0; i<var_num; i++) {
         free(data_tab[i]);
-        free(var_name_tab[i]);
     }
     free(data_tab);
 
@@ -220,8 +220,9 @@ static int put(MPI_Comm gcomm, int dims, std::vector<int>& np,
             timer_put.start();
             for(int i=0; i<var_num; i++) {
                 std::ofstream ofs;
-                ofs.(filename[i], std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
-                ofs.write(data_tab[i], grid_size*sizeof(double));
+                ofs.open(filename[i], std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
+                char *ptr = (char*)(data_tab[i]);
+                ofs.write(ptr, grid_size*sizeof(double));
                 if(ofs.fail()) {
                     ofs.close();
                     MPI_Abort(gcomm, -1);
@@ -252,7 +253,6 @@ static int put(MPI_Comm gcomm, int dims, std::vector<int>& np,
 
     for(int i=0; i<var_num; i++) {
         free(data_tab[i]);
-        free(var_name_tab[i]);
     }
     free(data_tab);
 
