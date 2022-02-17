@@ -20,6 +20,8 @@ __global__ void assign(double *ptr, int size, int var_idx)
 }
 };
 
+template <> struct Run<double>;
+
 template <>
 struct Run <double> {
 static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
