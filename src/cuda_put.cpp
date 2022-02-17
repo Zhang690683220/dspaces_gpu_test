@@ -4,12 +4,12 @@
 
 #include "CLI11.hpp"
 #include "mpi.h"
-#include "stdio_put.hpp"
+#include "cuda_put.cuh"
 
 
 void print_usage()
 {
-    std::cerr<<"Usage: stdio_put --dims <dims> --np <np[0] .. np[dims-1]> --sp <sp[0] ... sp[dims-1]> "
+    std::cerr<<"Usage: cuda_put --dims <dims> --np <np[0] .. np[dims-1]> --sp <sp[0] ... sp[dims-1]> "
                "--ts <timesteps> [-s <elem_size>] [-c <var_count>] [--log <log_file>] [--delay <delay_second>] "
                "[--interval <output_freq>] [-t]"<<std::endl
              <<"--dims                      - number of data dimensions. Must be [1-8]"<<std::endl
@@ -32,7 +32,7 @@ void print_usage()
 
 int main(int argc, char* argv[]) {
 
-    CLI::App app{"STDIO PUT Emulator"};
+    CLI::App app{"CUDA PUT Emulator for DataSpaces"};
     int dims;              // number of dimensions
     std::vector<int> np;
     std::vector<uint64_t> sp;
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     std::string listen_addr;
     int elem_type = 1;
     int num_vars = 1;
-    std::string log_name = "cpu_put.log";
+    std::string log_name = "cuda_put.log";
     int delay = 0;
     int interval = 1;
     bool terminate = false;
@@ -86,16 +86,17 @@ int main(int argc, char* argv[]) {
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
+    /*
     switch (elem_type)
     {
     case 1:
-        Run<double>::put(gcomm, dims, np, sp, timestep, num_vars, delay, interval,
-                        log_name);
+        Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
+                        log_name, terminate);
         break;
 
     case 2:
-        Run<float>::put(gcomm, dims, np, sp, timestep, num_vars, delay, interval,
-                        log_name);
+        Run<float>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
+                        log_name, terminate);
         break;
     
     default:
@@ -104,6 +105,10 @@ int main(int argc, char* argv[]) {
         MPI_Abort(MPI_COMM_WORLD, 1);
         break;
     }
+    */
+
+   Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
+                        log_name, terminate);
 
     
 

@@ -1,17 +1,19 @@
 add_executable(cpu_put cpu_put.cpp)
 target_include_directories(cpu_put PRIVATE ${INCLUDE_PATH})
-target_link_libraries(cpu_put PUBLIC MPI::MPI_CXX)
-target_link_libraries(cpu_put PUBLIC DataSpaces::DataSpaces)
+target_link_libraries(cpu_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces)
+
 
 add_executable(cpu_get cpu_get.cpp)
 target_include_directories(cpu_get PRIVATE ${INCLUDE_PATH})
-target_link_libraries(cpu_get PUBLIC MPI::MPI_CXX)
-target_link_libraries(cpu_get PUBLIC DataSpaces::DataSpaces)
+target_link_libraries(cpu_get PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces)
 
 add_executable(stdio_put stdio_put.cpp)
 target_include_directories(stdio_put PRIVATE ${INCLUDE_PATH})
 target_link_libraries(stdio_put PUBLIC MPI::MPI_CXX)
 
+add_executable(stdio_get stdio_get.cpp)
+target_include_directories(stdio_get PRIVATE ${INCLUDE_PATH})
+target_link_libraries(stdio_get PUBLIC MPI::MPI_CXX)
 
 # add_executable(gpu_cpu_put gpu_cpu_put.cpp)
 # target_include_directories(gpu_cpu_put PRIVATE ${INCLUDE_PATH})
@@ -33,3 +35,8 @@ target_link_libraries(stdio_put PUBLIC MPI::MPI_CXX)
 # target_link_libraries(gpu_put PUBLIC ${OpenACC_CXX_OPTIONS})
 # target_include_directories(gpu_put PRIVATE ${INCLUDE_PATH})
 # target_link_libraries(gpu_put PUBLIC DataSpaces::DataSpaces)
+
+add_executable(cuda_put cuda_put.cpp)
+target_include_directories(cuda_put PRIVATE ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
+target_link_libraries(cuda_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
+                        CUDA::cudart CUDA::cuda_driver)
