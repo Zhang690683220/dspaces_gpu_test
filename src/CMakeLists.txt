@@ -11,9 +11,9 @@ add_executable(stdio_put stdio_put.cpp)
 target_include_directories(stdio_put PRIVATE ${INCLUDE_PATH})
 target_link_libraries(stdio_put PUBLIC MPI::MPI_CXX)
 
-add_executable(stdio_get stdio_get.cpp)
-target_include_directories(stdio_get PRIVATE ${INCLUDE_PATH})
-target_link_libraries(stdio_get PUBLIC MPI::MPI_CXX)
+# add_executable(stdio_get stdio_get.cpp)
+# target_include_directories(stdio_get PRIVATE ${INCLUDE_PATH})
+# target_link_libraries(stdio_get PUBLIC MPI::MPI_CXX)
 
 # add_executable(gpu_cpu_put gpu_cpu_put.cpp)
 # target_include_directories(gpu_cpu_put PRIVATE ${INCLUDE_PATH})
