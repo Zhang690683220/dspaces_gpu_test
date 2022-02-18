@@ -4,6 +4,7 @@
 #include "unistd.h"
 #include "mpi.h"
 #include <iostream>
+#include <fstream>
 #include "dspaces.h"
 #include "timer.hpp"
 #include "cuda_runtime.h"
