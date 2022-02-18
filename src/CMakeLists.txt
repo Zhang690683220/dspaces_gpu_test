@@ -41,7 +41,7 @@ target_include_directories(cuda_exec PUBLIC ${INCLUDE_PATH} ${CUDAToolkit_INCLUD
 target_link_libraries(cuda_exec PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
                         CUDA::cudart CUDA::cuda_driver)
 
-add_executable(cuda_put cuda_put.cpp)
-target_include_directories(cuda_put PRIVATE ${INCLUDE_PATH})
+add_executable(cuda_put cuda_put.cu)
+target_include_directories(cuda_put PRIVATE ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
 target_link_libraries(cuda_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
-                        cuda_exec)
+                        CUDA::cudart CUDA::cuda_driver)
