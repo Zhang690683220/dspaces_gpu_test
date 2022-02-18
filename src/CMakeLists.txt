@@ -1,15 +1,15 @@
-add_executable(cpu_put cpu_put.cpp)
-target_include_directories(cpu_put PRIVATE ${INCLUDE_PATH})
-target_link_libraries(cpu_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces)
+# add_executable(cpu_put cpu_put.cpp)
+# target_include_directories(cpu_put PRIVATE ${INCLUDE_PATH})
+# target_link_libraries(cpu_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces)
 
 
-add_executable(cpu_get cpu_get.cpp)
-target_include_directories(cpu_get PRIVATE ${INCLUDE_PATH})
-target_link_libraries(cpu_get PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces)
+# add_executable(cpu_get cpu_get.cpp)
+# target_include_directories(cpu_get PRIVATE ${INCLUDE_PATH})
+# target_link_libraries(cpu_get PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces)
 
-add_executable(stdio_put stdio_put.cpp)
-target_include_directories(stdio_put PRIVATE ${INCLUDE_PATH})
-target_link_libraries(stdio_put PUBLIC MPI::MPI_CXX)
+# add_executable(stdio_put stdio_put.cpp)
+# target_include_directories(stdio_put PRIVATE ${INCLUDE_PATH})
+# target_link_libraries(stdio_put PUBLIC MPI::MPI_CXX)
 
 # add_executable(stdio_get stdio_get.cpp)
 # target_include_directories(stdio_get PRIVATE ${INCLUDE_PATH})
