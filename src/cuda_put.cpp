@@ -4,7 +4,7 @@
 
 #include "CLI11.hpp"
 #include "mpi.h"
-#include "cuda_put.hpp"
+#include "cuda_put.cuh"
 
 
 void print_usage()

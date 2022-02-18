@@ -36,7 +36,7 @@ target_link_libraries(stdio_get PUBLIC MPI::MPI_CXX)
 # target_include_directories(gpu_put PRIVATE ${INCLUDE_PATH})
 # target_link_libraries(gpu_put PUBLIC DataSpaces::DataSpaces)
 
-add_library(cuda_exec cuda_put.cu)
+add_library(cuda_exec ${INCLUDE_PATH}/cuda_put.cuh)
 target_include_directories(cuda_exec PUBLIC ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
 target_link_libraries(cuda_exec PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
                         CUDA::cudart CUDA::cuda_driver)
