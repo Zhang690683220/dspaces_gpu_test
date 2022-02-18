@@ -11,20 +11,17 @@
 
 
 template <typename Data_t>
-struct CUDA {
-    __global__ void assign(Data_t *ptr, int size, int var_idx);
-};
+__global__ void assign(Data_t *ptr, int size, int var_idx);
+
 
 template <>
-struct CUDA <double> {
-__global__ void assign(double *ptr, int size, int var_idx)
+__global__ void assign<double>(double *ptr, int size, int var_idx)
 {
     int idx = blockIdx.x*blockDim.x + threadIdx.x;
     if(idx<size) {
         ptr[idx] = idx + 0.01*var_idx;
     }
 }
-};
 
 template <typename Data_t>
 struct Run {
@@ -113,7 +110,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         if((ts-1)%interval==0) {
 
             for(int i=0; i<var_num; i++) {
-                CUDA<double>::assign<<<numBlocks, threadsPerBlock>>>(data_tab_d[i], grid_size, i);
+                assign<double><<<numBlocks, threadsPerBlock>>>(data_tab_d[i], grid_size, i);
             }
 
             // wait device to finish
