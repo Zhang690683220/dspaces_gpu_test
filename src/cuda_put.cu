@@ -24,6 +24,9 @@ __global__ void assign<double>(double *ptr, int size, int var_idx)
     }
 }
 
+//instantiate a template specification
+template struct Run<double>;
+
 template <>
 struct Run <double> {
 static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
@@ -166,4 +169,3 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 }
 };
 
-template struct Run<double>;

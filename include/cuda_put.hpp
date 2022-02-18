@@ -16,5 +16,9 @@ struct Run {
 };
 
 
+//instantiate a template specification
+template struct Run<double>;
+
+
 #endif // CUDA_PUT_HPP
 
