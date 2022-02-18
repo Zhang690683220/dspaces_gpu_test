@@ -23,14 +23,6 @@ __global__ void assign<double>(double *ptr, int size, int var_idx)
     }
 }
 
-template <typename Data_t>
-struct Run {
-    static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
-                    std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
-                    std::string log_name, bool terminate);
-};
-
-
 template <>
 struct Run <double> {
 static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
