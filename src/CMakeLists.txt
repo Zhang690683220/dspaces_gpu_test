@@ -39,7 +39,7 @@
 option(CASPER OFF)
 if(CASPER)
     add_definitions(-DCASPER)
-endif
+endif()
 
 add_executable(cuda_put cuda_put.cu)
 
