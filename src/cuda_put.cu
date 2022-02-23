@@ -10,7 +10,6 @@
 #include "dspaces.h"
 #include "timer.hpp"
 #include "cuda_runtime.h"
-#include "cuda_put.hpp"
 
 #include "CLI11.hpp"
 
