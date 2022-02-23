@@ -122,7 +122,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             }
 
             // wait device to finish
-            cuda_status = cudaThreadSynchronize();
+            cuda_status = cudaDeviceSynchronize();
 
             Timer timer_put;
             timer_put.start();
@@ -176,7 +176,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     dspaces_fini(ndcl);
 
-    return 0;
+    return cuda_status;
 
 }
 };
