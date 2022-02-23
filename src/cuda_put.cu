@@ -52,8 +52,11 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         listen_addr_str = (char*) malloc(sizeof(char)*128);
         strcpy(listen_addr_str, listen_addr.c_str());
     }
+#ifdef CASPER
+    dspaces_init(rank, &ndcl, listen_addr_str);
+#else
     dspaces_init(rank, &ndcl);
-
+#endif
     uint64_t grid_size = 1;
     for(int i=0; i<dims; i++) {
         grid_size *= sp[i];

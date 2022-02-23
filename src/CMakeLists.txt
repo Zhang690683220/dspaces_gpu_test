@@ -36,12 +36,15 @@
 # target_include_directories(gpu_put PRIVATE ${INCLUDE_PATH})
 # target_link_libraries(gpu_put PUBLIC DataSpaces::DataSpaces)
 
-add_library(cuda_exec cuda_put.cu)
-target_include_directories(cuda_exec PUBLIC ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
-target_link_libraries(cuda_exec PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
-                        CUDA::cudart CUDA::cuda_driver)
 
 add_executable(cuda_put cuda_put.cu)
-target_include_directories(cuda_put PRIVATE ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
-target_link_libraries(cuda_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
-                        CUDA::cudart CUDA::cuda_driver)
+
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
+    target_include_directories(cuda_put PRIVATE ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
+    target_link_libraries(cuda_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
+                            CUDA::cudart CUDA::cuda_driver)
+else()
+    target_include_directories(cuda_put PRIVATE ${CUDA_LIBRARIES})
+    target_link_libraries(cuda_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
+                            ${CUDA_INCLUDE_DIRS})
+endif()

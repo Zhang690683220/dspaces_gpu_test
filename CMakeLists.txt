@@ -12,8 +12,15 @@ set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include")
 find_package(MPI REQUIRED)
 # find_package(OpenACC REQUIRED)
 find_package(DataSpaces REQUIRED)
-find_package(CUDAToolkit REQUIRED)
+
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
+    find_package(CUDAToolkit)
+else()
+    find_package(CUDA)
+endif()
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+add_compile_definitions(CASPER=OFF)
 
 add_subdirectory(src)
