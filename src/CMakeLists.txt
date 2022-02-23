@@ -44,7 +44,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
     target_link_libraries(cuda_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
                             CUDA::cudart CUDA::cuda_driver)
 else()
-    target_include_directories(cuda_put PRIVATE ${CUDA_LIBRARIES})
+    target_include_directories(cuda_put PRIVATE ${CUDA_INCLUDE_DIRS})
     target_link_libraries(cuda_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
-                            ${CUDA_INCLUDE_DIRS})
+                            ${CUDA_LIBRARIES})
 endif()
