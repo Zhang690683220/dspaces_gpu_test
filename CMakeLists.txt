@@ -21,6 +21,4 @@ endif()
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_compile_definitions(CASPER=OFF)
-
 add_subdirectory(src)

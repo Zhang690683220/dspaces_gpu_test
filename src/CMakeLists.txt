@@ -36,6 +36,7 @@
 # target_include_directories(gpu_put PRIVATE ${INCLUDE_PATH})
 # target_link_libraries(gpu_put PUBLIC DataSpaces::DataSpaces)
 
+add_definitions(-DCASPER)
 
 add_executable(cuda_put cuda_put.cu)
 
