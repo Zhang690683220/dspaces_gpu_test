@@ -132,7 +132,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(off);
     free(lb);
     free(ub);
-    free(avg_put);
+    free(avg_get);
     free(listen_addr_str);
 
     if(rank == 0) {
@@ -263,7 +263,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(off);
     free(lb);
     free(ub);
-    free(avg_put);
+    free(avg_get);
     free(listen_addr_str);
 
     if(rank == 0) {
