@@ -52,3 +52,16 @@ else()
     target_link_libraries(cuda_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
                             ${CUDA_LIBRARIES})
 endif()
+
+add_executable(cuda_get cuda_get.cpp)
+set_source_files_properties(cuda_get.cuh PROPERTIES LANGUAGE "CUDA")
+
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
+    target_include_directories(cuda_get PRIVATE ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
+    target_link_libraries(cuda_get PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
+                            CUDA::cudart CUDA::cuda_driver)
+else()
+    target_include_directories(cuda_put PRIVATE ${INCLUDE_PATH} ${CUDA_INCLUDE_DIRS})
+    target_link_libraries(cuda_put PUBLIC MPI::MPI_CXX DataSpaces::DataSpaces
+                            ${CUDA_LIBRARIES})
+endif()
