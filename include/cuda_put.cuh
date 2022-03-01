@@ -13,8 +13,11 @@
 #include "timer.hpp"
 #include "cuda_runtime.h"
 
-extern template <typename Data_t>
-__global__ void assign(Data_t *ptr, int size, int var_idx);
+extern template <>
+__global__ void assign<double>(double *ptr, int size, int var_idx);
+
+extern template <>
+__global__ void assign<float>(float *ptr, int size, int var_idx);
 
 template <typename Data_t>
 struct Run {
