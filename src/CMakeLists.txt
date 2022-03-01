@@ -41,7 +41,7 @@ if(CASPER)
     add_definitions(-DCASPER)
 endif()
 
-add_executable(cuda_put cuda_put.cpp)
+add_executable(cuda_put cuda_put.cpp generate_value.cu)
 set_source_files_properties(cuda_put.cuh PROPERTIES LANGUAGE "CUDA")
 set_target_properties(cuda_put PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
