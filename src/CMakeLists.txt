@@ -43,6 +43,7 @@ endif()
 
 add_executable(cuda_put cuda_put.cpp)
 set_source_files_properties(cuda_put.cuh PROPERTIES LANGUAGE "CUDA")
+set_target_properties(cuda_put PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
     target_include_directories(cuda_put PRIVATE ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
@@ -56,6 +57,7 @@ endif()
 
 add_executable(cuda_get cuda_get.cpp)
 set_source_files_properties(cuda_get.cuh PROPERTIES LANGUAGE "CUDA")
+set_target_properties(cuda_get PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
     target_include_directories(cuda_get PRIVATE ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
