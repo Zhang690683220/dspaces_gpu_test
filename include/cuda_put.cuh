@@ -13,7 +13,7 @@
 #include "timer.hpp"
 #include "cuda_runtime.h"
 
-cudaError_t cuda_assign_double(MPI_Comm gcomm, float *ptr, int size, int var_idx);
+cudaError_t cuda_assign_double(MPI_Comm gcomm, double *ptr, int size, int var_idx);
 cudaError_t cuda_assign_float(MPI_Comm gcomm, float *ptr, int size, int var_idx);
 
 template <typename Data_t>
