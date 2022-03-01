@@ -13,8 +13,8 @@
 #include "timer.hpp"
 #include "cuda_runtime.h"
 
-void cuda_assign_double(MPI_Comm gcomm, float *ptr, int size, int var_idx);
-void cuda_assign_float(MPI_Comm gcomm, float *ptr, int size, int var_idx);
+cudaError_t cuda_assign_double(MPI_Comm gcomm, float *ptr, int size, int var_idx);
+cudaError_t cuda_assign_float(MPI_Comm gcomm, float *ptr, int size, int var_idx);
 
 template <typename Data_t>
 struct Run {
@@ -64,6 +64,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         ub[i] = off[i] + sp[i] - 1;
     }
 
+    cudaError_t cuda_status;
+
     // same init data for each var at host
     //double *data_tab_h = (double *) malloc(sizeof(double) * grid_size);
 
@@ -95,7 +97,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         if((ts-1)%interval==0) {
 
             for(int i=0; i<var_num; i++) {
-                cuda_assign_double(gcomm, data_tab_d[i], grid_size, i);
+                cuda_status = cuda_assign_double(gcomm, data_tab_d[i], grid_size, i);
             }
 
             // wait device to finish
@@ -199,6 +201,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         ub[i] = off[i] + sp[i] - 1;
     }
 
+    cudaError_t cuda_status;
+
     // same init data for each var at host
     //float *data_tab_h = (float *) malloc(sizeof(float) * grid_size);
 
@@ -230,7 +234,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         if((ts-1)%interval==0) {
 
             for(int i=0; i<var_num; i++) {
-                cuda_assign_float(gcomm, data_tab_d[i], grid_size, i);
+                cuda_status = cuda_assign_float(gcomm, data_tab_d[i], grid_size, i);
             }
 
             // wait device to finish
