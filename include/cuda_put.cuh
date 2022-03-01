@@ -69,8 +69,16 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     cudaError_t cuda_status;
     cudaDeviceProp dev_prop;
     cuda_status = cudaGetDeviceCount(&dev_num);
+    if(cuda_status != cudaSuccess) {
+        fprintf(stderr, "ERROR: (%s): cudaGetDeviceCount() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+        return -1;
+    }
     dev_rank = rank%dev_num;
     cuda_status = cudaSetDevice(dev_rank);
+    if(cuda_status != cudaSuccess) {
+        fprintf(stderr, "ERROR: (%s): cudaSetDevice() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+        return -1;
+    }
 
     // same init data for each var at host
     //double *data_tab_h = (double *) malloc(sizeof(double) * grid_size);
@@ -80,6 +88,10 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
     for(int i=0; i<var_num; i++) {
         cuda_status = cudaMalloc((void**)&data_tab_d[i],sizeof(double) * grid_size);
+        if(cuda_status != cudaSuccess) {
+            fprintf(stderr, "ERROR: (%s): cudaMalloc() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+            return -1;
+        }
         var_name_tab[i] = (char*) malloc(sizeof(char) * 128);
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
@@ -104,10 +116,18 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
             for(int i=0; i<var_num; i++) {
                 cuda_status = cuda_assign_double(dev_rank, data_tab_d[i], grid_size, i);
+                if(cuda_status != cudaSuccess) {
+                    fprintf(stderr, "ERROR: (%s): cuda_assign_double() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+                    return -1;
+                }
             }
 
             // wait device to finish
             cuda_status = cudaDeviceSynchronize();
+            if(cuda_status != cudaSuccess) {
+                fprintf(stderr, "ERROR: (%s): cudaDeviceSynchronize() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+                return -1;
+            }
 
             Timer timer_put;
             timer_put.start();
@@ -138,6 +158,10 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     for(int i=0; i<var_num; i++) {
         cuda_status = cudaFree(data_tab_d[i]);
+        if(cuda_status != cudaSuccess) {
+            fprintf(stderr, "ERROR: (%s): cudaFree() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+            return -1;
+        }
         free(var_name_tab[i]);
     }
     free(data_tab_d);
@@ -211,8 +235,16 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     cudaError_t cuda_status;
     cudaDeviceProp dev_prop;
     cuda_status = cudaGetDeviceCount(&dev_num);
+    if(cuda_status != cudaSuccess) {
+        fprintf(stderr, "ERROR: (%s): cudaGetDeviceCount() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+        return -1;
+    }
     dev_rank = rank%dev_num;
     cuda_status = cudaSetDevice(dev_rank);
+    if(cuda_status != cudaSuccess) {
+        fprintf(stderr, "ERROR: (%s): cudaSetDevice() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+        return -1;
+    }
 
     // same init data for each var at host
     //float *data_tab_h = (float *) malloc(sizeof(float) * grid_size);
@@ -222,6 +254,10 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     char **var_name_tab = (char **) malloc(sizeof(char*) * var_num);
     for(int i=0; i<var_num; i++) {
         cuda_status = cudaMalloc((void**)&data_tab_d[i],sizeof(float) * grid_size);
+        if(cuda_status != cudaSuccess) {
+            fprintf(stderr, "ERROR: (%s): cudaMalloc() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+            return -1;
+        }
         var_name_tab[i] = (char*) malloc(sizeof(char) * 128);
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
@@ -246,10 +282,18 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
             for(int i=0; i<var_num; i++) {
                 cuda_status = cuda_assign_float(dev_rank, data_tab_d[i], grid_size, i);
+                if(cuda_status != cudaSuccess) {
+                    fprintf(stderr, "ERROR: (%s): cuda_assign_double() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+                    return -1;
+                }
             }
 
             // wait device to finish
             cuda_status = cudaDeviceSynchronize();
+            if(cuda_status != cudaSuccess) {
+                fprintf(stderr, "ERROR: (%s): cudaDeviceSynchronize() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+                return -1;
+            }
 
             Timer timer_put;
             timer_put.start();
@@ -280,6 +324,10 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     for(int i=0; i<var_num; i++) {
         cuda_status = cudaFree(data_tab_d[i]);
+        if(cuda_status != cudaSuccess) {
+            fprintf(stderr, "ERROR: (%s): cudaFree() failed, Err Code: (%s)\n", __func__, cudaGetErrorString(cuda_status));
+            return -1;
+        }
         free(var_name_tab[i]);
     }
     free(data_tab_d);
