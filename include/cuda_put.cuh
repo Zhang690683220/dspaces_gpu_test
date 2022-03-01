@@ -13,8 +13,8 @@
 #include "timer.hpp"
 #include "cuda_runtime.h"
 
-cudaError_t cuda_assign_double(MPI_Comm gcomm, double *ptr, int size, int var_idx);
-cudaError_t cuda_assign_float(MPI_Comm gcomm, float *ptr, int size, int var_idx);
+cudaError_t cuda_assign_double(int dev_rank, double *ptr, int size, int var_idx);
+cudaError_t cuda_assign_float(int dev_rank, float *ptr, int size, int var_idx);
 
 template <typename Data_t>
 struct Run {
@@ -64,7 +64,13 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         ub[i] = off[i] + sp[i] - 1;
     }
 
+
+    int dev_num, dev_rank;
     cudaError_t cuda_status;
+    cudaDeviceProp dev_prop;
+    cuda_status = cudaGetDeviceCount(&dev_num);
+    dev_rank = rank%dev_num;
+    cuda_status = cudaSetDevice(dev_rank);
 
     // same init data for each var at host
     //double *data_tab_h = (double *) malloc(sizeof(double) * grid_size);
@@ -97,7 +103,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         if((ts-1)%interval==0) {
 
             for(int i=0; i<var_num; i++) {
-                cuda_status = cuda_assign_double(gcomm, data_tab_d[i], grid_size, i);
+                cuda_status = cuda_assign_double(dev_rank, data_tab_d[i], grid_size, i);
             }
 
             // wait device to finish
@@ -201,7 +207,12 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         ub[i] = off[i] + sp[i] - 1;
     }
 
+    int dev_num, dev_rank;
     cudaError_t cuda_status;
+    cudaDeviceProp dev_prop;
+    cuda_status = cudaGetDeviceCount(&dev_num);
+    dev_rank = rank%dev_num;
+    cuda_status = cudaSetDevice(dev_rank);
 
     // same init data for each var at host
     //float *data_tab_h = (float *) malloc(sizeof(float) * grid_size);
@@ -234,7 +245,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         if((ts-1)%interval==0) {
 
             for(int i=0; i<var_num; i++) {
-                cuda_status = cuda_assign_float(gcomm, data_tab_d[i], grid_size, i);
+                cuda_status = cuda_assign_float(dev_rank, data_tab_d[i], grid_size, i);
             }
 
             // wait device to finish
