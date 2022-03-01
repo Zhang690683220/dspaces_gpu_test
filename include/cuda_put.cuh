@@ -11,6 +11,7 @@
 #include "mpi.h"
 #include "dspaces.h"
 #include "timer.hpp"
+#include "cuda.h"
 #include "cuda_runtime.h"
 
 template <typename Data_t>
