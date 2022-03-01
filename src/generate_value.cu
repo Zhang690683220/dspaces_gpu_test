@@ -24,6 +24,7 @@ __global__ void assign<float>(float *ptr, int size, int var_idx)
 
 cudaError_t cuda_assign_double(MPI_Comm gcomm, double *ptr, int size, int var_idx)
 {
+    int rank;
     MPI_Comm_rank(gcomm, &rank);
     int dev_num, dev_rank;
     cudaError_t cuda_status;
@@ -34,15 +35,16 @@ cudaError_t cuda_assign_double(MPI_Comm gcomm, double *ptr, int size, int var_id
     cuda_status = cudaGetDeviceProperties(&dev_prop,dev_rank);
 
     int threadsPerBlock = dev_prop.maxThreadsPerBlock;
-    int numBlocks = (grid_size + threadsPerBlock) / threadsPerBlock;
+    int numBlocks = (size + threadsPerBlock) / threadsPerBlock;
 
     assign<double><<<numBlocks, threadsPerBlock>>>(ptr, size, var_idx);
 
-    return cuda_status
+    return cuda_status;
 }
 
 cudaError_t cuda_assign_float(MPI_Comm gcomm, float *ptr, int size, int var_idx)
 {
+    int rank;
     MPI_Comm_rank(gcomm, &rank);
     int dev_num, dev_rank;
     cudaError_t cuda_status;
@@ -53,9 +55,9 @@ cudaError_t cuda_assign_float(MPI_Comm gcomm, float *ptr, int size, int var_idx)
     cuda_status = cudaGetDeviceProperties(&dev_prop,dev_rank);
 
     int threadsPerBlock = dev_prop.maxThreadsPerBlock;
-    int numBlocks = (grid_size + threadsPerBlock) / threadsPerBlock;
+    int numBlocks = (size + threadsPerBlock) / threadsPerBlock;
 
     assign<float><<<numBlocks, threadsPerBlock>>>(ptr, size, var_idx);
 
-    return cuda_status
+    return cuda_status;
 }
