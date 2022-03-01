@@ -1,3 +1,4 @@
+#include "cuda_put.hpp"
 
 template <typename Data_t>
 __global__ void assign(Data_t *ptr, int size, int var_idx);
@@ -19,4 +20,38 @@ __global__ void assign<float>(float *ptr, int size, int var_idx)
     if(idx<size) {
         ptr[idx] = idx + 0.01*var_idx;
     }
+}
+
+void cuda_assign_double(MPI_Comm gcomm, float *ptr, int size, int var_idx)
+{
+    MPI_Comm_rank(gcomm, &rank);
+    int dev_num, dev_rank;
+    cudaError_t cuda_status;
+    cudaDeviceProp dev_prop;
+    cuda_status = cudaGetDeviceCount(&dev_num);
+    dev_rank = rank%dev_num;
+    cuda_status = cudaSetDevice(dev_rank);
+    cuda_status = cudaGetDeviceProperties(&dev_prop,dev_rank);
+
+    int threadsPerBlock = dev_prop.maxThreadsPerBlock;
+    int numBlocks = (grid_size + threadsPerBlock) / threadsPerBlock;
+
+    assign<double><<<numBlocks, threadsPerBlock>>>(ptr, size, var_idx);
+}
+
+void cuda_assign_float(MPI_Comm gcomm, float *ptr, int size, int var_idx)
+{
+    MPI_Comm_rank(gcomm, &rank);
+    int dev_num, dev_rank;
+    cudaError_t cuda_status;
+    cudaDeviceProp dev_prop;
+    cuda_status = cudaGetDeviceCount(&dev_num);
+    dev_rank = rank%dev_num;
+    cuda_status = cudaSetDevice(dev_rank);
+    cuda_status = cudaGetDeviceProperties(&dev_prop,dev_rank);
+
+    int threadsPerBlock = dev_prop.maxThreadsPerBlock;
+    int numBlocks = (grid_size + threadsPerBlock) / threadsPerBlock;
+
+    assign<float><<<numBlocks, threadsPerBlock>>>(ptr, size, var_idx);
 }

@@ -13,11 +13,8 @@
 #include "timer.hpp"
 #include "cuda_runtime.h"
 
-extern template <>
-__global__ void assign<double>(double *ptr, int size, int var_idx);
-
-extern template <>
-__global__ void assign<float>(float *ptr, int size, int var_idx);
+void cuda_assign_double(MPI_Comm gcomm, float *ptr, int size, int var_idx);
+void cuda_assign_float(MPI_Comm gcomm, float *ptr, int size, int var_idx);
 
 template <typename Data_t>
 struct Run {
@@ -67,17 +64,6 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         ub[i] = off[i] + sp[i] - 1;
     }
 
-    int dev_num, dev_rank;
-    cudaError_t cuda_status;
-    cudaDeviceProp dev_prop;
-    cuda_status = cudaGetDeviceCount(&dev_num);
-    dev_rank = rank%dev_num;
-    cuda_status = cudaSetDevice(dev_rank);
-    cuda_status = cudaGetDeviceProperties(&dev_prop,dev_rank);
-
-    int threadsPerBlock = dev_prop.maxThreadsPerBlock;
-    int numBlocks = (grid_size + threadsPerBlock) / threadsPerBlock;
-
     // same init data for each var at host
     //double *data_tab_h = (double *) malloc(sizeof(double) * grid_size);
 
@@ -109,7 +95,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         if((ts-1)%interval==0) {
 
             for(int i=0; i<var_num; i++) {
-                assign<double><<<numBlocks, threadsPerBlock>>>(data_tab_d[i], grid_size, i);
+                cuda_assign_double(gcomm, data_tab_d[i], grid_size, i);
             }
 
             // wait device to finish
@@ -213,17 +199,6 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         ub[i] = off[i] + sp[i] - 1;
     }
 
-    int dev_num, dev_rank;
-    cudaError_t cuda_status;
-    cudaDeviceProp dev_prop;
-    cuda_status = cudaGetDeviceCount(&dev_num);
-    dev_rank = rank%dev_num;
-    cuda_status = cudaSetDevice(dev_rank);
-    cuda_status = cudaGetDeviceProperties(&dev_prop,dev_rank);
-
-    int threadsPerBlock = dev_prop.maxThreadsPerBlock;
-    int numBlocks = (grid_size + threadsPerBlock) / threadsPerBlock;
-
     // same init data for each var at host
     //float *data_tab_h = (float *) malloc(sizeof(float) * grid_size);
 
@@ -255,7 +230,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         if((ts-1)%interval==0) {
 
             for(int i=0; i<var_num; i++) {
-                assign<float><<<numBlocks, threadsPerBlock>>>(data_tab_d[i], grid_size, i);
+                cuda_assign_float(gcomm, data_tab_d[i], grid_size, i);
             }
 
             // wait device to finish
