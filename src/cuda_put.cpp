@@ -4,7 +4,7 @@
 
 #include "CLI11.hpp"
 #include "mpi.h"
-#include "cuda_put.hpp"
+#include "cuda_put.cuh"
 
 
 void print_usage()
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    /*
+    
     switch (elem_type)
     {
     case 1:
@@ -105,13 +105,6 @@ int main(int argc, char* argv[]) {
         MPI_Abort(MPI_COMM_WORLD, 1);
         break;
     }
-    */
-
-   Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
-                        log_name, terminate);
-
-    
-
     
     MPI_Finalize();
 

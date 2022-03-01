@@ -41,7 +41,8 @@ if(CASPER)
     add_definitions(-DCASPER)
 endif()
 
-add_executable(cuda_put cuda_put.cu)
+add_executable(cuda_put cuda_put.cpp)
+set_source_files_properties(cuda_put.cuh PROPERTIES LANGUAGE "CUDA")
 
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
     target_include_directories(cuda_put PRIVATE ${INCLUDE_PATH} ${CUDAToolkit_INCLUDE_DIRS})
