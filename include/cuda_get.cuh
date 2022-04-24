@@ -155,6 +155,8 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     if(rank == 0) {
         total_avg /= (timesteps/interval);
+        total_avg_copy /= (timesteps/interval);
+        total_avg_transfer /= (timesteps/interval);
         log << "Average" << ", " << total_avg << ", " << total_avg_copy << ", " << total_avg_transfer << std::endl;
         log.close();
         if(terminate) {
@@ -304,6 +306,8 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     if(rank == 0) {
         total_avg /= (timesteps/interval);
+        total_avg_copy /= (timesteps/interval);
+        total_avg_transfer /= (timesteps/interval);
         log << "Average" << ", " << total_avg << ", " << total_avg_copy << ", " << total_avg_transfer << std::endl;
         log.close();
         if(terminate) {
