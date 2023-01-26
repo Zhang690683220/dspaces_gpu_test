@@ -158,7 +158,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 }
                 avg_put[ts-1] /= nprocs;
                 avg_itime[ts-1] /= nprocs;
-                log << ts << ", " << avg_put[ts-1] << avg_itime[ts-1] << std::endl;
+                log << ts << ", " << avg_put[ts-1] << ", " << avg_itime[ts-1] << std::endl;
                 total_avg += avg_put[ts-1];
                 total_itime +=avg_itime[ts-1];
                 free(avg_time_put);
@@ -187,7 +187,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     if(rank == 0) {
         total_avg /= (timesteps/interval);
         total_itime /= (timesteps/interval);
-        log << "Average" << ", " << total_avg << total_itime << std::endl;
+        log << "Average" << ", " << total_avg << ", " << total_itime << std::endl;
         log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
@@ -337,7 +337,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 }
                 avg_put[ts-1] /= nprocs;
                 avg_itime[ts-1] /= nprocs;
-                log << ts << ", " << avg_put[ts-1] << avg_itime[ts-1] << std::endl;
+                log << ts << ", " << avg_put[ts-1] << ", " << avg_itime[ts-1] << std::endl;
                 total_avg += avg_put[ts-1];
                 total_itime +=avg_itime[ts-1];
                 free(avg_time_put);
@@ -366,7 +366,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     if(rank == 0) {
         total_avg /= (timesteps/interval);
         total_itime /= (timesteps/interval);
-        log << "Average" << ", " << total_avg << total_itime << std::endl;
+        log << "Average" << ", " << total_avg << ", " << total_itime << std::endl;
         log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
