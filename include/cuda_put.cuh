@@ -132,7 +132,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 return -1;
             }
 
-            double time_itime;
+            double time_itime = 0;
             Timer timer_put;
             timer_put.start();
             for(int i=0; i<var_num; i++) {
@@ -311,7 +311,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 return -1;
             }
 
-            double time_itime;
+            double time_itime = 0;
             Timer timer_put;
             timer_put.start();
             for(int i=0; i<var_num; i++) {
