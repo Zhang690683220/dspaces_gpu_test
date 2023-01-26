@@ -99,12 +99,15 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     
     std::ofstream log;
     double* avg_put = nullptr;
+    double* avg_itime = nullptr;
     double total_avg = 0;
+    double total_itime = 0;
 
     if(rank == 0) {
         avg_put = (double*) malloc(sizeof(double)*timesteps);
+        avg_itime = (double*) malloc(sizeof(double)*timesteps);
         log.open(log_name, std::ofstream::out | std::ofstream::trunc);
-        log << "step, put_ms" << std::endl;
+        log << "step, put_ms, internal_ms" << std::endl;
     }
 
     for(int ts=1; ts<=timesteps; ts++) {
@@ -129,28 +132,35 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 return -1;
             }
 
+            double time_itime;
             Timer timer_put;
             timer_put.start();
             for(int i=0; i<var_num; i++) {
-                dspaces_cuda_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab_d[i]);
+                dspaces_cuda_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab_d[i], &time_itime);
             }
             double time_put = timer_put.stop();
 
             double *avg_time_put = nullptr;
+            double *avg_time_itime = nullptr;
 
             if(rank == 0) {
                 avg_time_put = (double*) malloc(sizeof(double)*nprocs);
+                avg_time_itime = (double*) malloc(sizeof(double)*nprocs);
             }
 
             MPI_Gather(&time_put, 1, MPI_DOUBLE, avg_time_put, 1, MPI_DOUBLE, 0, gcomm);
+            MPI_Gather(&time_itime, 1, MPI_DOUBLE, avg_time_itime, 1, MPI_DOUBLE, 0, gcomm);
 
             if(rank == 0) {
                 for(int i=0; i<nprocs; i++) {
                     avg_put[ts-1] += avg_time_put[i];
+                    avg_itime[ts-1] += avg_time_itime[i];
                 }
                 avg_put[ts-1] /= nprocs;
-                log << ts << ", " << avg_put[ts-1] << std::endl;
+                avg_itime[ts-1] /= nprocs;
+                log << ts << ", " << avg_put[ts-1] << avg_itime[ts-1] << std::endl;
                 total_avg += avg_put[ts-1];
+                total_itime +=avg_itime[ts-1];
                 free(avg_time_put);
             }
         }
@@ -171,11 +181,13 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(lb);
     free(ub);
     free(avg_put);
+    free(avg_itime);
     free(listen_addr_str);
 
     if(rank == 0) {
         total_avg /= (timesteps/interval);
-        log << "Average" << ", " << total_avg << std::endl;
+        total_itime /= (timesteps/interval);
+        log << "Average" << ", " << total_avg << total_itime << std::endl;
         log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
@@ -265,12 +277,16 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     
     std::ofstream log;
     double* avg_put = nullptr;
+    double* avg_itime = nullptr;
     double total_avg = 0;
+    double total_itime = 0;
+
 
     if(rank == 0) {
         avg_put = (double*) malloc(sizeof(double)*timesteps);
+        avg_itime = (double*) malloc(sizeof(double)*timesteps);
         log.open(log_name, std::ofstream::out | std::ofstream::trunc);
-        log << "step, put_ms" << std::endl;
+        log << "step, put_ms, internal_ms" << std::endl;
     }
 
     for(int ts=1; ts<=timesteps; ts++) {
@@ -295,28 +311,35 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 return -1;
             }
 
+            double time_itime;
             Timer timer_put;
             timer_put.start();
             for(int i=0; i<var_num; i++) {
-                dspaces_cuda_put(ndcl, var_name_tab[i], ts, sizeof(float), dims, lb, ub, data_tab_d[i]);
+                dspaces_cuda_put(ndcl, var_name_tab[i], ts, sizeof(float), dims, lb, ub, data_tab_d[i], &time_itime);
             }
             double time_put = timer_put.stop();
 
             double *avg_time_put = nullptr;
+            double *avg_time_itime = nullptr;
 
             if(rank == 0) {
                 avg_time_put = (double*) malloc(sizeof(double)*nprocs);
+                avg_time_itime = (double*) malloc(sizeof(double)*nprocs);
             }
 
             MPI_Gather(&time_put, 1, MPI_DOUBLE, avg_time_put, 1, MPI_DOUBLE, 0, gcomm);
+            MPI_Gather(&time_itime, 1, MPI_DOUBLE, avg_time_itime, 1, MPI_DOUBLE, 0, gcomm);
 
             if(rank == 0) {
                 for(int i=0; i<nprocs; i++) {
                     avg_put[ts-1] += avg_time_put[i];
+                    avg_itime[ts-1] += avg_time_itime[i];
                 }
                 avg_put[ts-1] /= nprocs;
-                log << ts << ", " << avg_put[ts-1] << std::endl;
+                avg_itime[ts-1] /= nprocs;
+                log << ts << ", " << avg_put[ts-1] << avg_itime[ts-1] << std::endl;
                 total_avg += avg_put[ts-1];
+                total_itime +=avg_itime[ts-1];
                 free(avg_time_put);
             }
         }
@@ -337,11 +360,13 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(lb);
     free(ub);
     free(avg_put);
+    free(avg_itime);
     free(listen_addr_str);
 
     if(rank == 0) {
         total_avg /= (timesteps/interval);
-        log << "Average" << ", " << total_avg << std::endl;
+        total_itime /= (timesteps/interval);
+        log << "Average" << ", " << total_avg << total_itime << std::endl;
         log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
