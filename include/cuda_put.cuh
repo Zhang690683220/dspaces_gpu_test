@@ -152,6 +152,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             MPI_Gather(&time_itime, 1, MPI_DOUBLE, avg_time_itime, 1, MPI_DOUBLE, 0, gcomm);
 
             if(rank == 0) {
+                avg_put[ts-1] = 0;
+                avg_itime[ts-1] = 0;
                 for(int i=0; i<nprocs; i++) {
                     avg_put[ts-1] += avg_time_put[i];
                     avg_itime[ts-1] += avg_time_itime[i];
@@ -331,6 +333,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             MPI_Gather(&time_itime, 1, MPI_DOUBLE, avg_time_itime, 1, MPI_DOUBLE, 0, gcomm);
 
             if(rank == 0) {
+                avg_put[ts-1] = 0;
+                avg_itime[ts-1] = 0;
                 for(int i=0; i<nprocs; i++) {
                     avg_put[ts-1] += avg_time_put[i];
                     avg_itime[ts-1] += avg_time_itime[i];
