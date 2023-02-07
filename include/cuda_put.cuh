@@ -42,7 +42,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 #ifdef CASPER
     dspaces_init(rank, &ndcl, listen_addr_str);
 #else
-    dspaces_init(rank, &ndcl);
+    dspaces_init_mpi(gcomm, &ndcl);
 #endif
 
     uint64_t grid_size = 1;
@@ -223,7 +223,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 #ifdef CASPER
     dspaces_init(rank, &ndcl, listen_addr_str);
 #else
-    dspaces_init(rank, &ndcl);
+    dspaces_init_mpi(gcomm, &ndcl);
 #endif
 
     uint64_t grid_size = 1;

@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     std::string listen_addr;
     int elem_type = 1;
     int num_vars = 1;
-    std::string log_name = "cpu_put.log";
+    std::string log_name = "cpu_get.log";
     int delay = 0;
     int interval = 1;
     bool terminate = false;
