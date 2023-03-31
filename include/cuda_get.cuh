@@ -122,7 +122,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             if(rank == 0) {
                 avg_get[ts-1] = 0;
                 avg_copy[ts-1] = 0;
-                avg_copy[ts-1] = 0;
+                avg_transfer[ts-1] = 0;
                 for(int i=0; i<nprocs; i++) {
                     avg_get[ts-1] += avg_time_get[i];
                     avg_copy[ts-1] += avg_time_copy[i];
@@ -276,7 +276,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             if(rank == 0) {
                 avg_get[ts-1] = 0;
                 avg_copy[ts-1] = 0;
-                avg_copy[ts-1] = 0;
+                avg_transfer[ts-1] = 0;
                 for(int i=0; i<nprocs; i++) {
                     avg_get[ts-1] += avg_time_get[i];
                     avg_copy[ts-1] += avg_time_copy[i];
