@@ -163,7 +163,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         log << "Average" << ", " << total_avg << ", " << total_avg_copy << ", " << total_avg_transfer << std::endl;
         log.close();
         if(terminate) {
-            std::cout<<"Writer sending kill signal to server."<<std::endl;
+            std::cout<<"Reader sending kill signal to server."<<std::endl;
             dspaces_kill(ndcl);
         }
     }
@@ -317,7 +317,7 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         log << "Average" << ", " << total_avg << ", " << total_avg_copy << ", " << total_avg_transfer << std::endl;
         log.close();
         if(terminate) {
-            std::cout<<"Writer sending kill signal to server."<<std::endl;
+            std::cout<<"Reader sending kill signal to server."<<std::endl;
             dspaces_kill(ndcl);
         }
     }
