@@ -1,4 +1,4 @@
-#include "cuda_put.hpp"
+#include "cuda_runtime.h"
 
 template <typename Data_t>
 __global__ void assign(Data_t *ptr, int size, int var_idx);
