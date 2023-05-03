@@ -107,7 +107,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         avg_put = (double*) malloc(sizeof(double)*timesteps);
         avg_itime = (double*) malloc(sizeof(double)*timesteps);
         log.open(log_name, std::ofstream::out | std::ofstream::trunc);
-        log << "step, put_ms, internal_ms" << std::endl;
+        // log << "step, put_ms, internal_ms" << std::endl;
+        log << "step, put_ms" << std::endl;
     }
 
     for(int ts=1; ts<=timesteps; ts++) {
@@ -136,7 +137,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             Timer timer_put;
             timer_put.start();
             for(int i=0; i<var_num; i++) {
-                dspaces_cuda_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab_d[i], &time_itime);
+                dspaces_cuda_put(ndcl, var_name_tab[i], ts, sizeof(double), dims, lb, ub, data_tab_d[i]);
             }
             double time_put = timer_put.stop();
 
@@ -160,7 +161,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 }
                 avg_put[ts-1] /= nprocs;
                 avg_itime[ts-1] /= nprocs;
-                log << ts << ", " << avg_put[ts-1] << ", " << avg_itime[ts-1] << std::endl;
+                // log << ts << ", " << avg_put[ts-1] << ", " << avg_itime[ts-1] << std::endl;
+                log << ts << ", " << avg_put[ts-1] << std::endl;
                 total_avg += avg_put[ts-1];
                 total_itime +=avg_itime[ts-1];
                 free(avg_time_put);
@@ -189,7 +191,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     if(rank == 0) {
         total_avg /= (timesteps/interval);
         total_itime /= (timesteps/interval);
-        log << "Average" << ", " << total_avg << ", " << total_itime << std::endl;
+        // log << "Average" << ", " << total_avg << ", " << total_itime << std::endl;
+        log << "Average" << ", " << total_avg << std::endl;
         log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
@@ -288,7 +291,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         avg_put = (double*) malloc(sizeof(double)*timesteps);
         avg_itime = (double*) malloc(sizeof(double)*timesteps);
         log.open(log_name, std::ofstream::out | std::ofstream::trunc);
-        log << "step, put_ms, internal_ms" << std::endl;
+        // log << "step, put_ms, internal_ms" << std::endl;
+        log << "step, put_ms" << std::endl;
     }
 
     for(int ts=1; ts<=timesteps; ts++) {
@@ -317,7 +321,7 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
             Timer timer_put;
             timer_put.start();
             for(int i=0; i<var_num; i++) {
-                dspaces_cuda_put(ndcl, var_name_tab[i], ts, sizeof(float), dims, lb, ub, data_tab_d[i], &time_itime);
+                dspaces_cuda_put(ndcl, var_name_tab[i], ts, sizeof(float), dims, lb, ub, data_tab_d[i]);
             }
             double time_put = timer_put.stop();
 
@@ -341,7 +345,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 }
                 avg_put[ts-1] /= nprocs;
                 avg_itime[ts-1] /= nprocs;
-                log << ts << ", " << avg_put[ts-1] << ", " << avg_itime[ts-1] << std::endl;
+                // log << ts << ", " << avg_put[ts-1] << ", " << avg_itime[ts-1] << std::endl;
+                log << ts << ", " << avg_put[ts-1] << std::endl;
                 total_avg += avg_put[ts-1];
                 total_itime +=avg_itime[ts-1];
                 free(avg_time_put);
@@ -370,7 +375,8 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     if(rank == 0) {
         total_avg /= (timesteps/interval);
         total_itime /= (timesteps/interval);
-        log << "Average" << ", " << total_avg << ", " << total_itime << std::endl;
+        // log << "Average" << ", " << total_avg << ", " << total_itime << std::endl;
+        log << "Average" << ", " << total_avg << std::endl;
         log.close();
         if(terminate) {
             std::cout<<"Writer sending kill signal to server."<<std::endl;
