@@ -17,14 +17,14 @@ template <typename Data_t>
 struct Run {
     static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                     std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
-                    std::string log_name, bool terminate);
+                    std::string log_name, bool terminate, bool interference);
 };
 
 template <>
 struct Run <double> {
 static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
-                std::string log_name, bool terminate)
+                std::string log_name, bool terminate, bool interference)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -78,6 +78,21 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
 
+    size_t elem_num = 1 << 27; // 1GB allgather
+    // malloc CUDA memory for MPI_Iallgather()
+    double *mpi_send_buf, *mpi_recv_buf, *mpi_host_buf;
+    if(interference) {
+        mpi_host_buf = (double*) malloc(elem_num*sizeof(double));
+        for(int i=0; i<elem_num; i++) {
+            mpi_host_buf[i] = 1.0;
+        }
+        cudaMalloc((void**)&mpi_send_buf, elem_num*sizeof(double));
+        cudaMalloc((void**)&mpi_recv_buf, elem_num*nprocs*sizeof(double));
+        cudaMemcpy(mpi_send_buf, mpi_host_buf, elem_num*sizeof(double), cudaMemcpyHostToDevice);
+        free(mpi_host_buf);
+    }
+    MPI_Request mpi_req;
+
     std::ofstream log;
     double* avg_get = nullptr;
     double* avg_copy = nullptr;
@@ -97,6 +112,11 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // output every $interval timesteps from timestep 1
         if((ts-1)%interval==0) {
+            if(ts != 1) {
+                MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+            }
+            MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
+
             double time_copy, time_transfer;
             Timer timer_get;
             timer_get.start();
@@ -156,6 +176,10 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(avg_get);
     free(listen_addr_str);
 
+    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+    cudaFree(mpi_send_buf);
+    cudaFree(mpi_recv_buf);
+
     if(rank == 0) {
         total_avg /= (timesteps/interval);
         total_avg_copy /= (timesteps/interval);
@@ -178,7 +202,7 @@ template <>
 struct Run <float> {
 static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
-                std::string log_name, bool terminate)
+                std::string log_name, bool terminate, bool interference)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -232,6 +256,21 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
         sprintf(var_name_tab[i], "test_var_%d", i);
     }
 
+    size_t elem_num = 1 << 27; // 1GB allgather
+    // malloc CUDA memory for MPI_Iallgather()
+    double *mpi_send_buf, *mpi_recv_buf, *mpi_host_buf;
+    if(interference) {
+        mpi_host_buf = (double*) malloc(elem_num*sizeof(double));
+        for(int i=0; i<elem_num; i++) {
+            mpi_host_buf[i] = 1.0;
+        }
+        cudaMalloc((void**)&mpi_send_buf, elem_num*sizeof(double));
+        cudaMalloc((void**)&mpi_recv_buf, elem_num*nprocs*sizeof(double));
+        cudaMemcpy(mpi_send_buf, mpi_host_buf, elem_num*sizeof(double), cudaMemcpyHostToDevice);
+        free(mpi_host_buf);
+    }
+    MPI_Request mpi_req;
+
     std::ofstream log;
     double* avg_get = nullptr;
     double* avg_copy = nullptr;
@@ -251,6 +290,11 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // output every $interval timesteps from timestep 1
         if((ts-1)%interval==0) {
+            if(ts != 1) {
+                MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+            }
+            MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
+
             double time_copy, time_transfer;
             Timer timer_get;
             timer_get.start();
@@ -309,6 +353,10 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(ub);
     free(avg_get);
     free(listen_addr_str);
+
+    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+    cudaFree(mpi_send_buf);
+    cudaFree(mpi_recv_buf);
 
     if(rank == 0) {
         total_avg /= (timesteps/interval);

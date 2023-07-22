@@ -25,7 +25,8 @@ void print_usage()
              <<"--log (optional)            - output log file name. Default to cpu_put.log"<<std::endl
              <<"--delay (optional)          - sleep(delay) seconds in each timestep. Default to 0"<<std::endl
              <<"--interval (optional)       - Output timestep interval. Default to 1"<<std::endl
-             <<"-k (optional)               - send server kill signal after writing is complete"<<std::endl;
+             <<"-k (optional)               - send server kill signal after writing is complete"<<std::endl
+             <<"-i (optional)               - enable MPI_Iallgather() before dspaces_put() for interference"<<std::endl;
 }
 
 
@@ -44,6 +45,7 @@ int main(int argc, char* argv[]) {
     int delay = 0;
     int interval = 1;
     bool terminate = false;
+    bool interference = false;
     app.add_option("--dims", dims, "number of data dimensions. Must be [1-8]")->required();
     app.add_option("--np", np, "the number of processes in the ith dimension. The product of np[0],"
                     "...,np[dim-1] must be the number of MPI ranks")->expected(1, 8);
@@ -59,6 +61,7 @@ int main(int argc, char* argv[]) {
     app.add_option("--delay", delay, "sleep(delay) seconds in each timestep. Default to 0", true);
     app.add_option("--interval", interval, "Output timestep interval. Default to 1", true);
     app.add_flag("-k", terminate, "send server kill signal after writing is complete");
+    app.add_flag("-i", interference, "enable MPI_Iallgather() before dspaces_put() for interference");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -91,12 +94,12 @@ int main(int argc, char* argv[]) {
     {
     case 1:
         Run<double>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
-                        log_name, terminate);
+                        log_name, terminate, interference);
         break;
 
     case 2:
         Run<float>::put(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
-                        log_name, terminate);
+                        log_name, terminate, interference);
         break;
     
     default:
