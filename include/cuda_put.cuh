@@ -146,11 +146,12 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 return -1;
             }
 
-            if(ts != 1) {
-                MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+            if(interference) {
+                if(ts != 1) {
+                    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+                }
+                MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
             }
-            MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
-
             double time_itime = 0;
             Timer timer_put;
             timer_put.start();
@@ -205,9 +206,11 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(avg_itime);
     free(listen_addr_str);
 
-    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
-    cudaFree(mpi_send_buf);
-    cudaFree(mpi_recv_buf);
+    if(interference) {
+        MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+        cudaFree(mpi_send_buf);
+        cudaFree(mpi_recv_buf);
+    }
 
     if(rank == 0) {
         total_avg /= (timesteps/interval);
@@ -350,11 +353,12 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 return -1;
             }
 
-            if(ts != 1) {
-                MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+            if(interference) {
+                if(ts != 1) {
+                    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+                }
+                MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
             }
-            MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
-
             double time_itime = 0;
             Timer timer_put;
             timer_put.start();
@@ -409,9 +413,11 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(avg_itime);
     free(listen_addr_str);
 
-    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
-    cudaFree(mpi_send_buf);
-    cudaFree(mpi_recv_buf);
+    if(interference) {
+        MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+        cudaFree(mpi_send_buf);
+        cudaFree(mpi_recv_buf);
+    }
 
     if(rank == 0) {
         total_avg /= (timesteps/interval);

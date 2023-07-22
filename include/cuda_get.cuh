@@ -112,11 +112,12 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // output every $interval timesteps from timestep 1
         if((ts-1)%interval==0) {
-            if(ts != 1) {
-                MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+            if(interference) {
+                if(ts != 1) {
+                    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+                }
+                MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
             }
-            MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
-
             double time_copy, time_transfer;
             Timer timer_get;
             timer_get.start();
@@ -176,9 +177,11 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(avg_get);
     free(listen_addr_str);
 
-    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
-    cudaFree(mpi_send_buf);
-    cudaFree(mpi_recv_buf);
+    if(interference) {
+        MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+        cudaFree(mpi_send_buf);
+        cudaFree(mpi_recv_buf);
+    }
 
     if(rank == 0) {
         total_avg /= (timesteps/interval);
@@ -290,11 +293,12 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     for(int ts=1; ts<=timesteps; ts++) {
         // output every $interval timesteps from timestep 1
         if((ts-1)%interval==0) {
-            if(ts != 1) {
-                MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+            if(interference) {
+                if(ts != 1) {
+                    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+                }
+                MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
             }
-            MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
-
             double time_copy, time_transfer;
             Timer timer_get;
             timer_get.start();
@@ -354,9 +358,11 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(avg_get);
     free(listen_addr_str);
 
-    MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
-    cudaFree(mpi_send_buf);
-    cudaFree(mpi_recv_buf);
+    if(interference) {
+        MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+        cudaFree(mpi_send_buf);
+        cudaFree(mpi_recv_buf);
+    }
 
     if(rank == 0) {
         total_avg /= (timesteps/interval);
