@@ -82,14 +82,17 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     // malloc CUDA memory for MPI_Iallgather()
     double *mpi_send_buf, *mpi_recv_buf, *mpi_host_buf;
     if(interference) {
-        mpi_host_buf = (double*) malloc(elem_num*sizeof(double));
-        for(int i=0; i<elem_num; i++) {
-            mpi_host_buf[i] = 1.0;
+        if(rank < (nprocs/2)) {
+            mpi_host_buf = (double*) malloc(elem_num*sizeof(double));
+            for(int i=0; i<elem_num; i++) {
+                mpi_host_buf[i] = 1.0;
+            }
+            cudaMalloc((void**)&mpi_send_buf, elem_num*sizeof(double));
+            cudaMemcpy(mpi_send_buf, mpi_host_buf, elem_num*sizeof(double), cudaMemcpyHostToDevice);
+            free(mpi_host_buf);
+        } else {
+            cudaMalloc((void**)&mpi_recv_buf, elem_num*nprocs*sizeof(double));
         }
-        cudaMalloc((void**)&mpi_send_buf, elem_num*sizeof(double));
-        cudaMalloc((void**)&mpi_recv_buf, elem_num*nprocs*sizeof(double));
-        cudaMemcpy(mpi_send_buf, mpi_host_buf, elem_num*sizeof(double), cudaMemcpyHostToDevice);
-        free(mpi_host_buf);
     }
     MPI_Request mpi_req;
 
@@ -116,7 +119,11 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 if(ts != 1) {
                     MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
                 }
-                MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
+                if(rank < (nprocs/2)) {
+                    MPI_Isend(mpi_send_buf, elem_num, MPI_DOUBLE, nprocs-1-rank, 0, gcomm, &mpi_req);
+                } else {
+                    MPI_Irecv(mpi_recv_buf, elem_num, MPI_DOUBLE, nprocs-1-rank, 0, gcomm, &mpi_req);
+                }
             }
             double time_copy, time_transfer;
             Timer timer_get;
@@ -179,8 +186,11 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     if(interference) {
         MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
-        cudaFree(mpi_send_buf);
-        cudaFree(mpi_recv_buf);
+        if(rank < (nprocs/2)) {
+            cudaFree(mpi_send_buf);
+        } else {
+            cudaFree(mpi_recv_buf);
+        }
     }
 
     if(rank == 0) {
@@ -263,14 +273,17 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     // malloc CUDA memory for MPI_Iallgather()
     double *mpi_send_buf, *mpi_recv_buf, *mpi_host_buf;
     if(interference) {
-        mpi_host_buf = (double*) malloc(elem_num*sizeof(double));
-        for(int i=0; i<elem_num; i++) {
-            mpi_host_buf[i] = 1.0;
+        if(rank < (nprocs/2)) {
+            mpi_host_buf = (double*) malloc(elem_num*sizeof(double));
+            for(int i=0; i<elem_num; i++) {
+                mpi_host_buf[i] = 1.0;
+            }
+            cudaMalloc((void**)&mpi_send_buf, elem_num*sizeof(double));
+            cudaMemcpy(mpi_send_buf, mpi_host_buf, elem_num*sizeof(double), cudaMemcpyHostToDevice);
+            free(mpi_host_buf);
+        } else {
+            cudaMalloc((void**)&mpi_recv_buf, elem_num*nprocs*sizeof(double));
         }
-        cudaMalloc((void**)&mpi_send_buf, elem_num*sizeof(double));
-        cudaMalloc((void**)&mpi_recv_buf, elem_num*nprocs*sizeof(double));
-        cudaMemcpy(mpi_send_buf, mpi_host_buf, elem_num*sizeof(double), cudaMemcpyHostToDevice);
-        free(mpi_host_buf);
     }
     MPI_Request mpi_req;
 
@@ -297,7 +310,11 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
                 if(ts != 1) {
                     MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
                 }
-                MPI_Iallgather(mpi_send_buf, elem_num, MPI_DOUBLE, mpi_recv_buf, elem_num, MPI_DOUBLE, gcomm, &mpi_req);
+                if(rank < (nprocs/2)) {
+                    MPI_Isend(mpi_send_buf, elem_num, MPI_DOUBLE, nprocs-1-rank, 0, gcomm, &mpi_req);
+                } else {
+                    MPI_Irecv(mpi_recv_buf, elem_num, MPI_DOUBLE, nprocs-1-rank, 0, gcomm, &mpi_req);
+                }
             }
             double time_copy, time_transfer;
             Timer timer_get;
@@ -360,8 +377,11 @@ static int get(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     if(interference) {
         MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
-        cudaFree(mpi_send_buf);
-        cudaFree(mpi_recv_buf);
+        if(rank < (nprocs/2)) {
+            cudaFree(mpi_send_buf);
+        } else {
+            cudaFree(mpi_recv_buf);
+        }
     }
 
     if(rank == 0) {
