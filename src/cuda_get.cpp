@@ -42,7 +42,8 @@ int main(int argc, char* argv[]) {
     int delay = 0;
     int interval = 1;
     bool terminate = false;
-    bool interference = false;
+    bool interference_cpu = false;
+    bool interference_gpu = false;
     app.add_option("--dims", dims, "number of data dimensions. Must be [1-8]")->required();
     app.add_option("--np", np, "the number of processes in the ith dimension. The product of np[0],"
                     "...,np[dim-1] must be the number of MPI ranks")->expected(1, 8);
@@ -58,7 +59,8 @@ int main(int argc, char* argv[]) {
     app.add_option("--delay", delay, "sleep(delay) seconds in each timestep. Default to 0", true);
     app.add_option("--interval", interval, "Output timestep interval. Default to 1", true);
     app.add_flag("-k", terminate, "send server kill signal after reading is complete");
-    app.add_flag("-i", interference, "enable MPI_Iallgather() before dspaces_put() for interference");
+    app.add_flag("--ic", interference_cpu, "enable MPI Send/Recv() from/to CPU before dspaces_put() for interference");
+    app.add_flag("--ig", interference_gpu, "enable MPI Send/Recv() from/to GPU before dspaces_put() for interference");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -90,12 +92,12 @@ int main(int argc, char* argv[]) {
     {
     case 1:
         Run<double>::get(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
-                        log_name, terminate, interference);
+                        log_name, terminate, interference_cpu, interference_gpu);
         break;
 
     case 2:
         Run<float>::get(gcomm, listen_addr, dims, np, sp, timestep, num_vars, delay, interval,
-                        log_name, terminate, interference);
+                        log_name, terminate, interference_cpu, interference_gpu);
         break;
     
     default:

@@ -20,14 +20,14 @@ template <typename Data_t>
 struct Run {
     static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                     std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
-                    std::string log_name, bool terminate, bool interference);
+                    std::string log_name, bool terminate, bool interference_cpu, bool interference_gpu);
 };
 
 template <>
 struct Run <double> {
 static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
-                std::string log_name, bool terminate, bool interference)
+                std::string log_name, bool terminate, bool interference_cpu, bool interference_gpu)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -98,8 +98,21 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     size_t elem_num = 1 << 27; // 1GB allgather
     // malloc CUDA memory for MPI_Iallgather()
+    bool interference = interference_cpu || interference_gpu;
     double *mpi_send_buf, *mpi_recv_buf, *mpi_host_buf;
-    if(interference) {
+
+    if(interference_cpu) {
+        if(rank < (nprocs/2)) {
+            mpi_send_buf = (double*) malloc(elem_num*sizeof(double));
+            for(int i=0; i<elem_num; i++) {
+                mpi_send_buf[i] = 1.0;
+            }
+        } else {
+            mpi_recv_buf = (double*) malloc(elem_num*sizeof(double));
+        }
+    }
+
+    if(interference_gpu) {
         if(rank < (nprocs/2)) {
             mpi_host_buf = (double*) malloc(elem_num*sizeof(double));
             for(int i=0; i<elem_num; i++) {
@@ -213,7 +226,16 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(avg_itime);
     free(listen_addr_str);
 
-    if(interference) {
+    if(interference_cpu) {
+        MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+        if(rank < (nprocs/2)) {
+            free(mpi_send_buf);
+        } else {
+            free(mpi_recv_buf);
+        }
+    }
+
+    if(interference_gpu) {
         MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
         if(rank < (nprocs/2)) {
             cudaFree(mpi_send_buf);
@@ -244,7 +266,7 @@ template <>
 struct Run <float> {
 static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<int>& np,
                 std::vector<uint64_t>& sp, int timesteps, int var_num, int delay, int interval, 
-                std::string log_name, bool terminate, bool interference)
+                std::string log_name, bool terminate, bool interference_cpu, bool interference_gpu)
 {
     int rank, nprocs;
     MPI_Comm_size(gcomm, &nprocs);
@@ -314,8 +336,21 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
 
     size_t elem_num = 1 << 27; // 1GB allgather
     // malloc CUDA memory for MPI_Iallgather()
+    bool interference = interference_cpu || interference_gpu;
     double *mpi_send_buf, *mpi_recv_buf, *mpi_host_buf;
-    if(interference) {
+
+    if(interference_cpu) {
+        if(rank < (nprocs/2)) {
+            mpi_send_buf = (double*) malloc(elem_num*sizeof(double));
+            for(int i=0; i<elem_num; i++) {
+                mpi_send_buf[i] = 1.0;
+            }
+        } else {
+            mpi_recv_buf = (double*) malloc(elem_num*sizeof(double));
+        }
+    }
+
+    if(interference_gpu) {
         if(rank < (nprocs/2)) {
             mpi_host_buf = (double*) malloc(elem_num*sizeof(double));
             for(int i=0; i<elem_num; i++) {
@@ -430,7 +465,16 @@ static int put(MPI_Comm gcomm, std::string listen_addr, int dims, std::vector<in
     free(avg_itime);
     free(listen_addr_str);
 
-    if(interference) {
+    if(interference_cpu) {
+        MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
+        if(rank < (nprocs/2)) {
+            free(mpi_send_buf);
+        } else {
+            free(mpi_recv_buf);
+        }
+    }
+
+    if(interference_gpu) {
         MPI_Wait(&mpi_req, MPI_STATUS_IGNORE);
         if(rank < (nprocs/2)) {
             cudaFree(mpi_send_buf);
